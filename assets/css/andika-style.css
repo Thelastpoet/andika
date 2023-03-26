@@ -1,0 +1,20 @@
+.wp-block-andika {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .wp-block-andika .block-editor-rich-text__editable {
+    font-size: 1.2em;
+    line-height: 1.5;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .wp-block-andika .wp-block-andika-output {
+    margin-top: 10px;
+    font-size: 1.2em;
+    line-height: 1.5;
+  }  

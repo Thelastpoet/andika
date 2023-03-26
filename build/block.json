@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "create-block/andika",
+  "version": "0.1.0",
+  "title": "Andika",
+  "category": "text",
+  "icon": "lightbulb",
+  "description": "Block for Using OpenAI with the WordPress block editor for real-time text generation.",
+  "supports": {
+    "html": false
+  },
+  "textdomain": "andika",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "attributes": {
+    "content": {
+      "type": "string",
+      "source": "html",
+      "selector": "p"
+    },
+    "alignment": {
+      "type": "string",
+      "default": "none"
+    }
+  }
+}
