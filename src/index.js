@@ -9,6 +9,7 @@ registerBlockType( metadata.name, {
 	title: metadata.title,
 	icon: metadata.icon,
 	category: metadata.category,
+	description: metadata.description,
 	supports: {
 		html: false,
 	},

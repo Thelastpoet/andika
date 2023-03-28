@@ -22,6 +22,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils_jeneration__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/jeneration */ "./src/utils/jeneration.js");
+
 
 
 
@@ -41,35 +43,7 @@ function Edit(_ref) {
   const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
   const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.store).getBlocks());
   const previousContent = previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n');
-  const generateText = async () => {
-    setIsLoading(true);
-    let prompt = '';
-    if (!attributes.content && postTitle) {
-      // If there is no content yet and the post has a title, generate text based on the title
-      prompt = `Title: ${postTitle}\n\nContinue the article based on the title:`;
-    } else {
-      // If there is content, use the last two or three sentences to generate the next sentences
-      const lastSentences = attributes.content.match(/[^\.!\?]+[\.!\?]+/g).slice(-3).join(' ');
-      prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${lastSentences}\n\nContinue the article based on the title and the last sentences:`;
-    }
-    const response = await fetch(andika.api_url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-WP-Nonce': andika.api_nonce
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        max_tokens: 300
-      })
-    });
-    const responseData = await response.json();
-    const newContent = attributes.content + responseData.generated_text;
-    setAttributes({
-      content: newContent
-    });
-    setIsLoading(false);
-  };
+  const handleGenerateText = () => (0,_utils_jeneration__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, postTitle, previousContent, setAttributes, setIsLoading);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.BlockControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.AlignmentToolbar, {
     value: attributes.alignment,
     onChange: alignment => setAttributes({
@@ -78,10 +52,10 @@ function Edit(_ref) {
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ToolbarButton, {
     icon: "lightbulb",
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Generate Text', 'andika'),
-    onClick: generateText,
+    onClick: handleGenerateText,
     disabled: isLoading
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.PanelColorSettings, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Color settings', 'andika'),
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Color', 'andika'),
     initialOpen: false,
     colorSettings: [{
       value: attributes.textColor,
@@ -89,13 +63,22 @@ function Edit(_ref) {
         textColor
       }),
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Text color', 'andika')
+    }, {
+      value: attributes.backgroundColor,
+      onChange: backgroundColor => setAttributes({
+        backgroundColor
+      }),
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Background color', 'andika')
     }]
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.FontSizePicker, {
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Typography', 'andika'),
+    initialOpen: false
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.FontSizePicker, {
     value: attributes.fontSize,
     onChange: fontSize => setAttributes({
       fontSize
     })
-  })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
+  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
     tagName: "p",
     value: attributes.content,
     onChange: content => setAttributes({
@@ -106,6 +89,7 @@ function Edit(_ref) {
     style: {
       textAlign: attributes.alignment,
       color: attributes.textColor,
+      backgroundColor: attributes.backgroundColor,
       fontSize: attributes.fontSize ? `${attributes.fontSize}px` : undefined
     },
     onSplit: (content, end) => {
@@ -162,6 +146,47 @@ function Save(_ref) {
     }
   }, _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save()));
 }
+
+/***/ }),
+
+/***/ "./src/utils/jeneration.js":
+/*!*********************************!*\
+  !*** ./src/utils/jeneration.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const generateText = async (attributes, postTitle, previousContent, setAttributes, setIsLoading) => {
+  setIsLoading(true);
+  let prompt = '';
+  if (!attributes.content && postTitle) {
+    prompt = `Title: ${postTitle}\n\nContinue the article based on the title:`;
+  } else {
+    const lastSentences = attributes.content.match(/[^\.!\?]+[\.!\?]+/g).slice(-3).join(' ');
+    prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${lastSentences}\n\nContinue the article based on the title and the last sentences:`;
+  }
+  const response = await fetch(andika.api_url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-WP-Nonce': andika.api_nonce
+    },
+    body: JSON.stringify({
+      prompt: prompt,
+      max_tokens: 300
+    })
+  });
+  const responseData = await response.json();
+  const newContent = attributes.content + responseData.generated_text;
+  setAttributes({
+    content: newContent
+  });
+  setIsLoading(false);
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (generateText);
 
 /***/ }),
 
@@ -270,7 +295,7 @@ function _extends() {
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"create-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Block for Using OpenAI with the WordPress block editor for real-time text generation.","supports":{"html":false},"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"alignment":{"type":"string","default":"none"},"textColor":{"type":"string"},"fontSize":{"type":"number","default":16}},"keywords":["andika","openai","real-time","ai"]}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"create-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","supports":{"html":false},"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"alignment":{"type":"string","default":"none"},"textColor":{"type":"string"},"backgroundColor":{"type":"string"},"fontSize":{"type":"number","default":16}},"keywords":["andika","openai","real-time","ai","GPT3.5"]}');
 
 /***/ })
 
@@ -364,6 +389,7 @@ __webpack_require__.r(__webpack_exports__);
   title: _block_json__WEBPACK_IMPORTED_MODULE_4__.title,
   icon: _block_json__WEBPACK_IMPORTED_MODULE_4__.icon,
   category: _block_json__WEBPACK_IMPORTED_MODULE_4__.category,
+  description: _block_json__WEBPACK_IMPORTED_MODULE_4__.description,
   supports: {
     html: false
   },

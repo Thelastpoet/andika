@@ -6,7 +6,7 @@
   "title": "Andika",
   "category": "text",
   "icon": "lightbulb",
-  "description": "Block for Using OpenAI with the WordPress block editor for real-time text generation.",
+  "description": "Elevate your writing with real-time AI text generation using Andika.",
   "supports": {
     "html": false
   },
@@ -27,6 +27,9 @@
     "textColor": {
       "type": "string"
     },
+    "backgroundColor": {
+      "type": "string"
+    },
     "fontSize": {
       "type": "number",
       "default": 16
@@ -36,6 +39,7 @@
     "andika",
     "openai",
     "real-time",
-    "ai"
+    "ai",
+    "GPT3.5"
   ]
 }

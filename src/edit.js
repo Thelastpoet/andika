@@ -9,10 +9,11 @@ import {
     FontSizePicker,
 
 } from '@wordpress/block-editor';
-import { ToolbarButton } from '@wordpress/components';
+import { ToolbarButton, PanelBody } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
+import generateText from './utils/jeneration';
 
 export default function Edit({ attributes, setAttributes, isSelected }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -29,39 +30,7 @@ export default function Edit({ attributes, setAttributes, isSelected }) {
         .map((block) => block.attributes.content)
         .join('\n');
 
-		const generateText = async () => {
-			setIsLoading(true);
-		
-			let prompt = '';
-		
-			if (!attributes.content && postTitle) {
-				// If there is no content yet and the post has a title, generate text based on the title
-				prompt = `Title: ${postTitle}\n\nContinue the article based on the title:`;
-			} else {
-				// If there is content, use the last two or three sentences to generate the next sentences
-				const lastSentences = attributes.content.match(/[^\.!\?]+[\.!\?]+/g).slice(-3).join(' ');
-				prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${lastSentences}\n\nContinue the article based on the title and the last sentences:`;
-			}
-		
-			const response = await fetch(andika.api_url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': andika.api_nonce,
-				},
-				body: JSON.stringify({
-					prompt: prompt,
-					max_tokens: 300,
-				}),
-			});
-		
-			const responseData = await response.json();
-		
-			const newContent = attributes.content + responseData.generated_text;
-			setAttributes({ content: newContent });
-		
-			setIsLoading(false);
-		};
+		const handleGenerateText = () => generateText(attributes, postTitle, previousContent, setAttributes, setIsLoading);
 		
     return (
         <div {...useBlockProps()}>
@@ -73,13 +42,13 @@ export default function Edit({ attributes, setAttributes, isSelected }) {
                 <ToolbarButton
                     icon="lightbulb"
                     label={__('Generate Text', 'andika')}
-                    onClick={generateText}
+                    onClick={handleGenerateText}
                     disabled={isLoading}
                 />
             </BlockControls>
 			<InspectorControls>
 				<PanelColorSettings
-					title={__('Color settings', 'andika')}
+					title={__('Color', 'andika')}
 					initialOpen={false}
 					colorSettings={[
 						{
@@ -87,12 +56,19 @@ export default function Edit({ attributes, setAttributes, isSelected }) {
 							onChange: (textColor) => setAttributes({ textColor }),
 							label: __('Text color', 'andika'),
 						},
+						{
+                            value: attributes.backgroundColor,
+                            onChange: (backgroundColor) => setAttributes({ backgroundColor }),
+                            label: __('Background color', 'andika'),
+                        },
 					]}
 				/>
-				<FontSizePicker
-					value={attributes.fontSize}
-					onChange={(fontSize) => setAttributes({ fontSize })}
-				/>
+				<PanelBody title={__('Typography', 'andika')} initialOpen={false}>
+                    <FontSizePicker
+                        value={attributes.fontSize}
+                        onChange={(fontSize) => setAttributes({ fontSize })}
+                    />
+                </PanelBody>
 			</InspectorControls>
             <RichText
                 tagName="p"
@@ -103,7 +79,12 @@ export default function Edit({ attributes, setAttributes, isSelected }) {
                     'andika',
                 )}
                 isSelected={isSelected}
-                style={{ textAlign: attributes.alignment, color: attributes.textColor, fontSize: attributes.fontSize ? `${attributes.fontSize}px` : undefined, }}
+                style={{
+                    textAlign: attributes.alignment,
+                    color: attributes.textColor,
+                    backgroundColor: attributes.backgroundColor,
+                    fontSize: attributes.fontSize ? `${attributes.fontSize}px` : undefined,
+                }}
                 onSplit={(content, end) => {
                     if (end === null) {
                         setAttributes({ content });
