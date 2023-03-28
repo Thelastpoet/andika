@@ -4,7 +4,7 @@ class Andika_Block {
     public function enqueue_block_editor_assets() {
         wp_register_script(
 			'andika-block-editor',
-			ANDIKA_PLUGIN_URL . 'src/index.js',
+			ANDIKA_PLUGIN_URL . 'build/index.js',
 			array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-api-fetch'),
 			ANDIKA_VERSION,
 			true
@@ -29,13 +29,6 @@ class Andika_Block {
 		// Enqueue the script and style.
 		wp_enqueue_script('andika-block-editor');
 		wp_enqueue_style('andika-block-editor-style');
-    }
-
-    public function register_block() {
-        register_block_type('andika/interactive-block', array(
-			'editor_script' => 'andika-block-editor',
-			'editor_style'  => 'andika-block-editor-style',
-		));
     }
 
     function andika_generate_text_ajax_handler() {
@@ -63,9 +56,3 @@ class Andika_Block {
 		wp_die();
 	}
 }
-
-// Hook into 'init' action to register the block.
-add_action('init', function() {
-    $andika_block = new Andika_Block();
-    $andika_block->register_block();
-});

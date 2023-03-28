@@ -2,21 +2,23 @@
 
 class Andika {
     public function __construct() {
-        $this->load_dependencies();
-        $this->define_hooks();
+        $this->andika_dependencies();
+        $this->andika_hooks();
     }
 
-    private function load_dependencies() {
-        require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika-settings.php';
+    private function andika_dependencies() {
+        require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika-admin.php';
         require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika-block.php';
         require_once ANDIKA_PLUGIN_DIR . 'includes/class-openai-api.php';
     }
 
-    private function define_hooks() {
+    private function andika_hooks() {
         // Admin settings page.
         $settings = new Andika_Settings();
         add_action('admin_menu', array($settings, 'register_settings_page'));
         add_action('admin_init', array($settings, 'register_settings'));
+
+        
         add_action('admin_enqueue_scripts', array($settings, 'enqueue_admin_assets'));
 
         // Block editor custom block.
@@ -28,6 +30,6 @@ class Andika {
     }
 
     public function run() {
-        // Any additional setup or actions that need to run when the plugin is initialized.
+        // I will do this later when I come back to this file
     }
 }

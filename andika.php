@@ -3,7 +3,7 @@
 Plugin Name: Andika
 Plugin URI: https:nabaleka.com
 Description: Andika integrates OpenAI with the WordPress block editor for real-time text generation.
-Version: 1.0.0
+Version: 1.0.3
 Author: Ammanulah Emmanuel
 Author URI: https://nabaleka.com
 License: GPL-2.0+
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define the plugin's constants.
-define('ANDIKA_VERSION', '1.0.1');
+define('ANDIKA_VERSION', '1.0.3');
 define('ANDIKA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ANDIKA_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -27,11 +27,6 @@ function andika_load_textdomain() {
     load_plugin_textdomain('andika', false, basename(dirname(__FILE__)) . '/languages');
 }
 add_action('plugins_loaded', 'andika_load_textdomain');
-
-function create_block_andika_block_init() {
-	register_block_type( __DIR__ . '/build' );
-}
-add_action( 'init', 'create_block_andika_block_init' );
 
 // Include the main plugin class file.
 require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika.php';

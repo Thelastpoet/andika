@@ -12,9 +12,9 @@ class Andika_OpenAI_API {
 	
 		$default_options = array(
 			'model' => get_option('andika_model', 'text-davinci-003'),
-			'n' => get_option('andika_n', 1),
+			'n' => (int) get_option('andika_n', 1),
 			'stop' => get_option('andika_stop', null),
-			'temperature' => get_option('andika_temperature', 0.5),
+			'temperature' => (float) get_option('andika_temperature', 0.5),
 		);
 	
 		$options = wp_parse_args($options, $default_options);
@@ -42,6 +42,6 @@ class Andika_OpenAI_API {
 			return $body['choices'][0]['text'];
 		}
 	
-		return __('Error generating text.', 'andika');
+		return __('Error generating text. Did you set a valid OpenAI API Key?', 'andika');
 	}	
 }

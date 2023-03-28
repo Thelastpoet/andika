@@ -23,7 +23,14 @@
 		"alignment": {
 			"type": "string",
 			"default": "none"
-		}
+		},
+		"textColor": {
+			"type": "string"
+		},
+		"fontSize": {
+			"type": "number",
+			"default": 16
+		}		
 	},
 	"keywords": [
 		"andika",
