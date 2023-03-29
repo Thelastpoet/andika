@@ -10,7 +10,7 @@ export default function Save({ attributes }) {
             style={{
                 textAlign: alignment,
                 color: textColor,
-                fontSize: fontSize ? fontSize + 'px' : undefined,
+                fontSize: fontSize,
                 direction: direction,
             }}
             {...useBlockProps.save()}

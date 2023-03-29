@@ -1,4 +1,5 @@
 import { registerBlockType } from '@wordpress/blocks';
+import { __ } from '@wordpress/i18n';
 import './editor.scss';
 
 import Edit from './edit';
@@ -6,10 +7,10 @@ import Save from './save';
 import metadata from './block.json';
 
 registerBlockType( metadata.name, {
-	title: metadata.title,
+	title: __( metadata.title ),
 	icon: metadata.icon,
 	category: metadata.category,
-	description: metadata.description,
+	description: __( metadata.description ),
 	supports: {
 		html: false,
 	},

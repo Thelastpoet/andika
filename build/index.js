@@ -86,7 +86,7 @@ function Edit(_ref) {
       textAlign: attributes.alignment,
       color: attributes.textColor,
       backgroundColor: attributes.backgroundColor,
-      fontSize: attributes.fontSize ? `${attributes.fontSize}px` : undefined
+      fontSize: attributes.fontSize
     },
     onSplit: (content, end) => {
       if (end === null) {
@@ -139,7 +139,7 @@ function Save(_ref) {
     style: {
       textAlign: alignment,
       color: textColor,
-      fontSize: fontSize ? fontSize + 'px' : undefined,
+      fontSize: fontSize,
       direction: direction
     }
   }, _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save()));
@@ -285,7 +285,7 @@ function _extends() {
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p","default":"","__experimentalRole":"content"},"align":{"type":"string"},"placeholder":{"type":"string"},"direction":{"type":"string","enum":["ltr","rtl"]},"featureXEnabled":{"type":"boolean","default":false}},"supports":{"anchor":true,"className":false,"color":{"gradients":true,"link":true,"__experimentalDefaultControls":{"background":true,"text":true}},"spacing":{"margin":true,"padding":true},"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextDecoration":true,"__experimentalFontStyle":true,"__experimentalFontWeight":true,"__experimentalLetterSpacing":true,"__experimentalTextTransform":true,"__experimentalDefaultControls":{"fontSize":true}},"__experimentalSelector":"p","__unstablePasteTextInline":true}}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p","default":"","role":"content"},"align":{"type":"string"},"placeholder":{"type":"string"},"textColor":{"type":"string"},"backgroundColor":{"type":"string"},"fontSize":{"type":"number","default":16}},"supports":{"html":true}}');
 
 /***/ })
 
@@ -366,26 +366,29 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./editor.scss */ "./src/editor.scss");
-/* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./edit */ "./src/edit.js");
-/* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./save */ "./src/save.js");
-/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./editor.scss */ "./src/editor.scss");
+/* harmony import */ var _edit__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./edit */ "./src/edit.js");
+/* harmony import */ var _save__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./save */ "./src/save.js");
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
 
 
 
 
 
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_4__.name, {
-  title: _block_json__WEBPACK_IMPORTED_MODULE_4__.title,
-  icon: _block_json__WEBPACK_IMPORTED_MODULE_4__.icon,
-  category: _block_json__WEBPACK_IMPORTED_MODULE_4__.category,
-  description: _block_json__WEBPACK_IMPORTED_MODULE_4__.description,
+
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_5__.name, {
+  title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)(_block_json__WEBPACK_IMPORTED_MODULE_5__.title),
+  icon: _block_json__WEBPACK_IMPORTED_MODULE_5__.icon,
+  category: _block_json__WEBPACK_IMPORTED_MODULE_5__.category,
+  description: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)(_block_json__WEBPACK_IMPORTED_MODULE_5__.description),
   supports: {
     html: false
   },
-  attributes: _block_json__WEBPACK_IMPORTED_MODULE_4__.attributes,
-  edit: _edit__WEBPACK_IMPORTED_MODULE_2__["default"],
-  save: _save__WEBPACK_IMPORTED_MODULE_3__["default"]
+  attributes: _block_json__WEBPACK_IMPORTED_MODULE_5__.attributes,
+  edit: _edit__WEBPACK_IMPORTED_MODULE_3__["default"],
+  save: _save__WEBPACK_IMPORTED_MODULE_4__["default"]
 });
 })();
 

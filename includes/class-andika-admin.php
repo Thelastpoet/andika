@@ -1,4 +1,13 @@
 <?php
+/**
+ * Andiks Settings page.
+ * 
+ * @package Andika
+ */
+
+ if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 class Andika_Settings {
     public function register_settings_page() {

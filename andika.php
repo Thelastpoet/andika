@@ -1,39 +1,44 @@
 <?php
-/*
-Plugin Name: Andika
-Plugin URI: https:nabaleka.com
-Description: Andika brings the power of AI to the WordPress block editor for seamless writing.
-Version: 1.0.9
-Author: Ammanulah Emmanuel
-Author URI: https://nabaleka.com
-License: GPL-2.0+
-License URI: http://www.gnu.org/licenses/gpl-2.0.txt
-Text Domain: andika
-Domain Path: /languages
-*/
+/**
+ * Plugin Name: Andika - Your AI Witing Companion
+ * Plugin URI: https:nabaleka.com
+ * Description: Andika brings the power of AI to the WordPress block editor for seamless writing.
+ * Version: 1.0.9
+ * Author: Ammanulah Emmanuel
+ * Author URI: https://nabaleka.com
+ * Requires at least: 5.9
+ * Requires PHP: 5.6
+ * License: GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: andika
+ *
+ * @package Andika
+ */
 
-// If this file is called directly, abort.
-if (!defined('ABSPATH')) {
-    die;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
 }
 
-// Define the plugin's constants.
-define('ANDIKA_VERSION', '1.0.9');
-define('ANDIKA_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('ANDIKA_PLUGIN_URL', plugin_dir_url(__FILE__));
+define( 'ANDIKA_VERSION', '1.0.9' );
+define( 'ANDIKA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'ANDIKA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Load the plugin's text domain for translations.
+// Load andika textdomain.
 function andika_load_textdomain() {
-    load_plugin_textdomain('andika', false, basename(dirname(__FILE__)) . '/languages');
+    load_plugin_textdomain(
+        'andika',
+        false,
+        ANDIKA_PLUGIN_DIR . 'languages'
+    );
 }
 add_action('plugins_loaded', 'andika_load_textdomain');
 
-// Include the main plugin class file.
+// Andika main class.
 require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika.php';
 
-// Initialize the plugin and set up the necessary hooks.
+// Initialize andika.
 function andika_initialize() {
-    $andika = new Andika();
-    $andika->run();
+	$andika = new Andika();
+	$andika->run();
 }
-andika_initialize();
+add_action( 'plugins_loaded', 'andika_initialize' );

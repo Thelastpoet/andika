@@ -1,26 +1,26 @@
 import { __ } from '@wordpress/i18n';
 import {
-	useBlockProps,
-	RichText,
-	BlockControls,
-	AlignmentToolbar,
-	InspectorControls,
+    useBlockProps,
+    RichText,
+    BlockControls,
+    AlignmentToolbar,
+    InspectorControls,
     PanelColorSettings,
     FontSizePicker,
-
 } from '@wordpress/block-editor';
 import { ToolbarButton, PanelBody } from '@wordpress/components';
 import { useState } from '@wordpress/element';
+
 import generateText from './utils/jeneration';
 
 export default function Edit({ attributes, setAttributes, isSelected }) {
     const [isLoading] = useState(false);
 
-	const handleGenerateText = async () => {
+    const handleGenerateText = async () => {
         const newContent = await generateText(attributes, attributes.content, setAttributes);
         setAttributes({ content: newContent });
     };
-		
+
     return (
         <div {...useBlockProps()}>
             <BlockControls>
@@ -35,30 +35,30 @@ export default function Edit({ attributes, setAttributes, isSelected }) {
                     disabled={isLoading}
                 />
             </BlockControls>
-			<InspectorControls>
-				<PanelColorSettings
-					title={__('Color', 'andika')}
-					initialOpen={false}
-					colorSettings={[
-						{
-							value: attributes.textColor,
-							onChange: (textColor) => setAttributes({ textColor }),
-							label: __('Text color', 'andika'),
-						},
-						{
+            <InspectorControls>
+                <PanelColorSettings
+                    title={__('Color', 'andika')}
+                    initialOpen={false}
+                    colorSettings={[
+                        {
+                            value: attributes.textColor,
+                            onChange: (textColor) => setAttributes({ textColor }),
+                            label: __('Text color', 'andika'),
+                        },
+                        {
                             value: attributes.backgroundColor,
                             onChange: (backgroundColor) => setAttributes({ backgroundColor }),
                             label: __('Background color', 'andika'),
                         },
-					]}
-				/>
-				<PanelBody title={__('Typography', 'andika')} initialOpen={false}>
+                    ]}
+                />
+                <PanelBody title={__('Typography', 'andika')} initialOpen={false}>
                     <FontSizePicker
                         value={attributes.fontSize}
                         onChange={(fontSize) => setAttributes({ fontSize })}
                     />
                 </PanelBody>
-			</InspectorControls>
+            </InspectorControls>
             <RichText
                 tagName="p"
                 value={attributes.content}
@@ -72,7 +72,7 @@ export default function Edit({ attributes, setAttributes, isSelected }) {
                     textAlign: attributes.alignment,
                     color: attributes.textColor,
                     backgroundColor: attributes.backgroundColor,
-                    fontSize: attributes.fontSize ? `${attributes.fontSize}px` : undefined,
+                    fontSize: attributes.fontSize,
                 }}
                 onSplit={(content, end) => {
                     if (end === null) {

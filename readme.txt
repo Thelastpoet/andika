@@ -1,55 +1,52 @@
 === Andika ===
-Contributors:      The WordPress Contributors
-Tags:              block
-Tested up to:      6.1
-Stable tag:        0.1.0
-License:           GPL-2.0-or-later
-License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Contributors: ammanulah
+Tags: writing, AI, block editor, natural language processing
+Requires at least: 5.0
+Tested up to: 5.8
+Stable tag: 1.0.9
+License: GPL-2.0+
+License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-Example block scaffolded with Create Block tool.
+Andika brings the power of AI to the WordPress block editor for seamless writing.
 
 == Description ==
 
-This is the long description. No limit, and you can use Markdown (as well as in the following sections).
+Andika is a WordPress plugin that uses natural language processing (NLP) and machine learning (ML) algorithms to enhance the writing experience in the WordPress block editor. With Andika, you can:
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+- Generate high-quality, original content based on your topic and preferences
+- Automatically summarize your content for easy skimming and comprehension
+- Get writing suggestions and alerts for grammar, tone, and style
+- And more!
+
+Andika is easy to use and integrates seamlessly with the WordPress block editor. Try it out today and experience the future of writing!
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
 1. Upload the plugin files to the `/wp-content/plugins/andika` directory, or install the plugin through the WordPress plugins screen directly.
-1. Activate the plugin through the 'Plugins' screen in WordPress
-
+2. Activate the plugin through the 'Plugins' screen in WordPress.
+3. Use the Andika block in the WordPress block editor to start writing smarter!
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= How does Andika work? =
 
-An answer to that question.
+Andika uses advanced NLP and ML algorithms to analyze your content and provide suggestions for improvement. Our algorithms are based on the latest research in the field, and are constantly updated to ensure the best possible performance.
 
-= What about foo bar? =
+= Can I customize the settings and preferences for Andika? =
 
-Answer to foo bar dilemma.
+Yes! Andika provides a variety of options and settings that you can customize to fit your specific needs and preferences. For example, you can choose the tone and style of your content, adjust the level of detail in your summaries, and more.
+
+= Is Andika free to use? =
+
+Andika offers both free and premium plans, depending on your needs and usage. The free plan includes basic features and functionality, while the premium plans offer more advanced features and support.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. The Andika block in the WordPress block editor.
+2. The Andika settings panel, where you can customize your preferences and settings.
+3. Andika in action, generating high-quality, original content for your website.
 
 == Changelog ==
 
-= 0.1.0 =
-* Release
-
-== Arbitrary section ==
-
-You may provide arbitrary sections, in the same format as the ones above. This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation." Arbitrary sections will be shown below the built-in sections outlined above.
+= 1.0.0 =
+Initial Release
