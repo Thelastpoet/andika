@@ -20,11 +20,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _utils_jeneration__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/jeneration */ "./src/utils/jeneration.js");
-
-
+/* harmony import */ var _utils_jeneration__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/jeneration */ "./src/utils/jeneration.js");
 
 
 
@@ -37,13 +33,13 @@ function Edit(_ref) {
     setAttributes,
     isSelected
   } = _ref;
-  const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-
-  // Get the post title and previous block content
-  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
-  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.store).getBlocks());
-  const previousContent = previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n');
-  const handleGenerateText = () => (0,_utils_jeneration__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, postTitle, previousContent, setAttributes, setIsLoading);
+  const [isLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const handleGenerateText = async () => {
+    const newContent = await (0,_utils_jeneration__WEBPACK_IMPORTED_MODULE_4__["default"])(attributes, attributes.content, setAttributes);
+    setAttributes({
+      content: newContent
+    });
+  };
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.BlockControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.AlignmentToolbar, {
     value: attributes.alignment,
     onChange: alignment => setAttributes({
@@ -134,7 +130,8 @@ function Save(_ref) {
     content,
     alignment,
     textColor,
-    fontSize
+    fontSize,
+    direction
   } = attributes;
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
     tagName: "p",
@@ -142,7 +139,8 @@ function Save(_ref) {
     style: {
       textAlign: alignment,
       color: textColor,
-      fontSize: fontSize ? fontSize + 'px' : undefined
+      fontSize: fontSize ? fontSize + 'px' : undefined,
+      direction: direction
     }
   }, _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save()));
 }
@@ -165,8 +163,10 @@ const generateText = async (attributes, postTitle, previousContent, setAttribute
   if (!attributes.content && postTitle) {
     prompt = `Title: ${postTitle}\n\nContinue the article based on the title:`;
   } else {
-    const lastSentences = attributes.content.match(/[^\.!\?]+[\.!\?]+/g).slice(-3).join(' ');
-    prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${lastSentences}\n\nContinue the article based on the title and the last sentences:`;
+    const lastParagraphs = attributes.content.match(/[^\\n]+\\n\\n/g);
+    const lastParagraphsText = lastParagraphs ? lastParagraphs.slice(-3).join(' ') : '';
+    const unfinishedParagraph = attributes.content.replace(lastParagraphsText, '').trim();
+    prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${lastParagraphsText}\n\n${unfinishedParagraph}\n\nContinue the article based on the title, the last paragraphs, and the current unfinished paragraph:`;
   }
   const response = await fetch(andika.api_url, {
     method: 'POST',
@@ -176,7 +176,7 @@ const generateText = async (attributes, postTitle, previousContent, setAttribute
     },
     body: JSON.stringify({
       prompt: prompt,
-      max_tokens: 300
+      max_tokens: andika.max_tokens
     })
   });
   const responseData = await response.json();
@@ -229,16 +229,6 @@ module.exports = window["wp"]["blocks"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["components"];
-
-/***/ }),
-
-/***/ "@wordpress/data":
-/*!******************************!*\
-  !*** external ["wp","data"] ***!
-  \******************************/
-/***/ ((module) => {
-
-module.exports = window["wp"]["data"];
 
 /***/ }),
 
@@ -295,7 +285,7 @@ function _extends() {
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"create-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","supports":{"html":false},"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"alignment":{"type":"string","default":"none"},"textColor":{"type":"string"},"backgroundColor":{"type":"string"},"fontSize":{"type":"number","default":16}},"keywords":["andika","openai","real-time","ai","GPT3.5"]}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p","default":"","__experimentalRole":"content"},"align":{"type":"string"},"placeholder":{"type":"string"},"direction":{"type":"string","enum":["ltr","rtl"]},"featureXEnabled":{"type":"boolean","default":false}},"supports":{"anchor":true,"className":false,"color":{"gradients":true,"link":true,"__experimentalDefaultControls":{"background":true,"text":true}},"spacing":{"margin":true,"padding":true},"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalTextDecoration":true,"__experimentalFontStyle":true,"__experimentalFontWeight":true,"__experimentalLetterSpacing":true,"__experimentalTextTransform":true,"__experimentalDefaultControls":{"fontSize":true}},"__experimentalSelector":"p","__unstablePasteTextInline":true}}');
 
 /***/ })
 

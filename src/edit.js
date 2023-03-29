@@ -11,26 +11,15 @@ import {
 } from '@wordpress/block-editor';
 import { ToolbarButton, PanelBody } from '@wordpress/components';
 import { useState } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import { store as blockEditorStore } from '@wordpress/block-editor';
 import generateText from './utils/jeneration';
 
 export default function Edit({ attributes, setAttributes, isSelected }) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading] = useState(false);
 
-    // Get the post title and previous block content
-    const postTitle = useSelect((select) =>
-        select('core/editor').getEditedPostAttribute('title')
-    );
-    const previousBlocks = useSelect((select) =>
-        select(blockEditorStore).getBlocks()
-    );
-    const previousContent = previousBlocks
-        .slice(0, -1)
-        .map((block) => block.attributes.content)
-        .join('\n');
-
-		const handleGenerateText = () => generateText(attributes, postTitle, previousContent, setAttributes, setIsLoading);
+	const handleGenerateText = async () => {
+        const newContent = await generateText(attributes, attributes.content, setAttributes);
+        setAttributes({ content: newContent });
+    };
 		
     return (
         <div {...useBlockProps()}>

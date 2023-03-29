@@ -23,6 +23,7 @@ class Andika_Block {
             array(
                 'api_nonce' => wp_create_nonce('wp_rest'),
                 'api_url' => admin_url('admin-ajax.php?action=andika_generate_text'),
+				'max_tokens' => (int) get_option('andika_max_tokens', 500),
             )
         );
 

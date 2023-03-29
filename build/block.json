@@ -1,15 +1,19 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 2,
-  "name": "create-block/andika",
+  "name": "andika-block/andika",
   "version": "0.1.0",
   "title": "Andika",
   "category": "text",
   "icon": "lightbulb",
   "description": "Elevate your writing with real-time AI text generation using Andika.",
-  "supports": {
-    "html": false
-  },
+  "keywords": [
+    "andika",
+    "openai",
+    "real-time",
+    "ai",
+    "text"
+  ],
   "textdomain": "andika",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
@@ -18,28 +22,57 @@
     "content": {
       "type": "string",
       "source": "html",
-      "selector": "p"
+      "selector": "p",
+      "default": "",
+      "__experimentalRole": "content"
     },
-    "alignment": {
+    "align": {
+      "type": "string"
+    },
+    "placeholder": {
+      "type": "string"
+    },
+    "direction": {
       "type": "string",
-      "default": "none"
+      "enum": [
+        "ltr",
+        "rtl"
+      ]
     },
-    "textColor": {
-      "type": "string"
-    },
-    "backgroundColor": {
-      "type": "string"
-    },
-    "fontSize": {
-      "type": "number",
-      "default": 16
+    "featureXEnabled": {
+      "type": "boolean",
+      "default": false
     }
   },
-  "keywords": [
-    "andika",
-    "openai",
-    "real-time",
-    "ai",
-    "GPT3.5"
-  ]
+  "supports": {
+    "anchor": true,
+    "className": false,
+    "color": {
+      "gradients": true,
+      "link": true,
+      "__experimentalDefaultControls": {
+        "background": true,
+        "text": true
+      }
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "__experimentalFontFamily": true,
+      "__experimentalTextDecoration": true,
+      "__experimentalFontStyle": true,
+      "__experimentalFontWeight": true,
+      "__experimentalLetterSpacing": true,
+      "__experimentalTextTransform": true,
+      "__experimentalDefaultControls": {
+        "fontSize": true
+      }
+    },
+    "__experimentalSelector": "p",
+    "__unstablePasteTextInline": true
+  }
 }

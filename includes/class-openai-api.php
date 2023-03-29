@@ -18,7 +18,6 @@ class Andika_OpenAI_API {
             'best_of' => (int) get_option('andika_best_of', 1),
             'frequency_penalty' => (float) get_option('andika_frequency_penalty', 0),
             'presence_penalty' => (float) get_option('andika_presence_penalty', 0),
-            'max_tokens' => (int) get_option('andika_max_tokens', 1000),
             'top_p' => (float) get_option('andika_top_p', 1),
         );
 
