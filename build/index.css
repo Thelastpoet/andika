@@ -7,4 +7,18 @@
   padding: 2px;
 }
 
+/* RichText component */
+
+.andika-placeholder ::-moz-placeholder {
+  color: #888;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.andika-placeholder ::placeholder {
+  color: #888;
+  font-style: italic;
+  font-weight: normal;
+}
+
 /*# sourceMappingURL=index.css.map*/

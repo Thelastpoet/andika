@@ -39,8 +39,7 @@
       "type": "string"
     },
     "fontSize": {
-      "type": "number",
-      "default": 16
+      "type": "number"
     }
   },
   "supports": {

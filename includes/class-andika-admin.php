@@ -169,6 +169,7 @@ class Andika_Settings {
 	
 	public function render_model_field() {
 		$models = array(
+			'gpt-3.5-turbo'    => 'GPT-3.5 Turbo',
 			'text-davinci-003' => 'text-davinci-003',
 			'text-curie-001'   => 'text-curie-001',
 			'text-babbage-001' => 'text-babbage-001',
