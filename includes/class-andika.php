@@ -14,7 +14,7 @@ class Andika {
     }
 
     private function andika_dependencies() {
-        require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika-admin.php';
+        require_once ANDIKA_PLUGIN_DIR . 'includes/admin/andika-settings.php';
         require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika-block.php';
         require_once ANDIKA_PLUGIN_DIR . 'includes/class-openai-api.php';
     }
@@ -36,7 +36,7 @@ class Andika {
         add_action('enqueue_block_editor_assets', array($block, 'enqueue_block_editor_assets'));
 
         // AJAX handler for text generation.
-        add_action('wp_ajax_andika_generate_text', array($block, 'andika_generate_text_ajax_handler'));
+        add_action('wp_ajax_andika', array($block, 'andika_ajax_handler'));
         
     }
 

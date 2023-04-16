@@ -1,12 +1,11 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 2,
   "name": "andika-block/andika",
   "version": "0.1.0",
   "title": "Andika",
   "category": "text",
   "icon": "lightbulb",
   "description": "Elevate your writing with real-time AI text generation using Andika.",
+  "author": "Ammanulah Emmanuel",
   "keywords": [
     "andika",
     "openai",

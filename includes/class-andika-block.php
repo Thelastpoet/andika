@@ -38,7 +38,7 @@ class Andika_Block {
 		wp_enqueue_style('andika-block-editor-style');
     }
 
-    public function andika_generate_text_ajax_handler() {
+    public function andika_ajax_handler() {
 		if (!is_user_logged_in() || !current_user_can('edit_posts')) {
 			http_response_code(403);
 			echo json_encode(['error' => 'Forbidden']);
