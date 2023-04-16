@@ -22,7 +22,7 @@ class Andika_Block {
             'andika',
             array(
                 'api_nonce' => wp_create_nonce('wp_rest'),
-                'api_url' => admin_url('admin-ajax.php?action=andika_generate_text'),
+                'api_url' => admin_url('admin-ajax.php?action=andika_ai'),
 				'model' => get_option('andika_model', 'text-davinci-003'),
 				'temperature' => (float) get_option('andika_temperature', 0.7),
 				'maxTokens' => (int) get_option('andika_max_tokens', 100),

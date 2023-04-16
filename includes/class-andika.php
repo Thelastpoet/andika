@@ -36,8 +36,7 @@ class Andika {
         add_action('enqueue_block_editor_assets', array($block, 'enqueue_block_editor_assets'));
 
         // AJAX handler for text generation.
-        add_action('wp_ajax_andika', array($block, 'andika_ajax_handler'));
-        
+        add_action('wp_ajax_andika_ai', array($block, 'andika_ajax_handler'));        
     }
 
     public function run() {
