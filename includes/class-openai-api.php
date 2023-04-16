@@ -4,6 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+/**
+ * Andika OpenaAi class.
+ */
 class Andika_OpenAI_API {
     private $api_key;
     private $model;
@@ -24,17 +27,17 @@ class Andika_OpenAI_API {
     }
 
     private function get_api_url() {
-        if ($this->model === 'gpt-3.5-turbo') {
+        if ($this->model === 'gpt-3.5-turbo' || $this->model === 'gpt-4') {
             return 'https://api.openai.com/v1/chat/completions';
         } else {
             return 'https://api.openai.com/v1/completions';
         }
     }
 
-    public function generate_text($prompt, $options = array()) {
+    public function generate_text($prompt, $stream, $options = array()) {
         $url = $this->get_api_url();
 
-        if ($this->model === 'gpt-3.5-turbo') {
+        if ($this->model === 'gpt-3.5-turbo' || $this->model === 'gpt-4') {
             $options['messages'] = array(
                 array("role" => "user", "content" => $prompt)
             );
@@ -48,11 +51,16 @@ class Andika_OpenAI_API {
             'max_tokens' => $this->max_tokens,
             'top_p' => $this->top_p,
             'frequency_penalty' => $this->frequency_penalty,
-            'presence_penalty' => $this->presence_penalty,
+            'presence_penalty' => $this->presence_penalty,         
         );
 
-        $options = wp_parse_args($options, $default_options);
+        if ($stream) {
+            $options['stream'] = true;
+        }
 
+        $options = wp_parse_args($options, $default_options);
+        $options['stream'] = (bool) $options['stream'];
+        
         $args = array(
             'headers' => array(
                 'Content-Type' => 'application/json',
@@ -60,23 +68,25 @@ class Andika_OpenAI_API {
             ),
             'body' => json_encode($options),
             'method' => 'POST',
-            'timeout' => 15,
+            'timeout' => 100,
         );
 
         $response = wp_remote_request($url, $args);
-
+    
         if (is_wp_error($response)) {
             return $response->get_error_message();
         }
 
         $body = json_decode(wp_remote_retrieve_body($response), true);
 
+        error_log("Response body: " . print_r($body, true));
+        
         if (isset($body['choices'][0]['text'])) {
             return $body['choices'][0]['text'];
         } elseif (isset($body['choices'][0]['message']['content'])) {
             return $body['choices'][0]['message']['content'];
         }
 
-        return __('Error generating text. Did you set a valid OpenAI API Key?', 'andika');
+        return __('Error generating text! Did you set a valid API Key? I want this to be long so I see the stream. Remind me to edit after done', 'andika');
     }
 }

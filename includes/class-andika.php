@@ -1,5 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+/**
+ * Andika main class.
+ */
 class Andika {
     public function __construct() {
         $this->andika_dependencies();
@@ -12,6 +19,9 @@ class Andika {
         require_once ANDIKA_PLUGIN_DIR . 'includes/class-openai-api.php';
     }
 
+    /**
+	 * Load required dependencies.
+	 */
     private function andika_hooks() {
         // Admin settings page.
         $settings = new Andika_Settings();
@@ -27,9 +37,10 @@ class Andika {
 
         // AJAX handler for text generation.
         add_action('wp_ajax_andika_generate_text', array($block, 'andika_generate_text_ajax_handler'));
+        
     }
 
     public function run() {
-        // I will do this later when I come back to this file
+        // Let's do this later when we come back to this file
     }
 }

@@ -22,27 +22,36 @@
     "content": {
       "type": "string",
       "source": "html",
-      "selector": "p",
-      "default": "",
-      "role": "content"
+      "selector": "p"
     },
-    "align": {
-      "type": "string"
+    "alignment": {
+      "type": "string",
+      "default": "none"
     },
-    "placeholder": {
+    "backgroundColor": {
       "type": "string"
     },
     "textColor": {
       "type": "string"
     },
-    "backgroundColor": {
+    "fontSize": {
       "type": "string"
     },
-    "fontSize": {
-      "type": "number"
+    "lineHeight": {
+      "type": "number",
+      "default": 1.5
     }
   },
   "supports": {
-    "html": true
+    "color": {
+      "text": true,
+      "background": true,
+      "gradients": true,
+      "link": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
   }
 }

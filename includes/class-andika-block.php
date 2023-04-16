@@ -23,7 +23,13 @@ class Andika_Block {
             array(
                 'api_nonce' => wp_create_nonce('wp_rest'),
                 'api_url' => admin_url('admin-ajax.php?action=andika_generate_text'),
-				'max_tokens' => (int) get_option('andika_max_tokens', 500),
+				'model' => get_option('andika_model', 'text-davinci-003'),
+				'temperature' => (float) get_option('andika_temperature', 0.7),
+				'maxTokens' => (int) get_option('andika_max_tokens', 100),
+				'topP' => (float) get_option('andika_top_p', 1),
+				'frequencyPenalty' => (float) get_option('andika_frequency_penalty', 0),
+				'presencePenalty' => (float) get_option('andika_presence_penalty', 0),
+				'stream' => true,
             )
         );
 
@@ -32,7 +38,7 @@ class Andika_Block {
 		wp_enqueue_style('andika-block-editor-style');
     }
 
-    function andika_generate_text_ajax_handler() {
+    public function andika_generate_text_ajax_handler() {
 		if (!is_user_logged_in() || !current_user_can('edit_posts')) {
 			http_response_code(403);
 			echo json_encode(['error' => 'Forbidden']);
@@ -42,12 +48,17 @@ class Andika_Block {
 		// Get the request data
 		$data = json_decode(file_get_contents('php://input'), true);
 	
-		// Perform your text generation logic here (same as handle_generate_text method)
+		// Perform your text generation logic here
 		$api_key = get_option('andika_openai_api_key');
 		$prompt = $data['prompt'];
 	
+		$data['stream'] = filter_var($data['stream'], FILTER_VALIDATE_BOOLEAN);
+		
 		$openai_api = new Andika_OpenAI_API($api_key);
-		$generated_text = $openai_api->generate_text($prompt);
+		$generated_text = $openai_api->generate_text($prompt, $stream, array());
+		
+		// Clear any output buffer before sending the JSON response
+		ob_clean();
 	
 		// Return the generated text as JSON
 		http_response_code(200);
@@ -55,5 +66,5 @@ class Andika_Block {
 		echo json_encode(['generated_text' => $generated_text]);
 	
 		wp_die();
-	}
+	}	
 }

@@ -1,7 +1,9 @@
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { RichText } from '@wordpress/block-editor';
 
-export default function Save({ attributes }) {
-    const { content, alignment, textColor, fontSize, direction } = attributes;
+export default function save({ attributes }) {
+    const { content, alignment, backgroundColor, textColor, fontSize, lineHeight } = attributes;
+
+    const fontSizeInRem = fontSize ? fontSize / 16 + 'rem' : undefined;
 
     return (
         <RichText.Content
@@ -9,11 +11,11 @@ export default function Save({ attributes }) {
             value={content}
             style={{
                 textAlign: alignment,
+                fontSize: fontSizeInRem,
                 color: textColor,
-                fontSize: fontSize,
-                direction: direction,
+                backgroundColor: backgroundColor,
+                lineHeight: lineHeight ? lineHeight : undefined,
             }}
-            {...useBlockProps.save()}
         />
     );
 }
