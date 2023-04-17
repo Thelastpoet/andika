@@ -1,7 +1,5 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
-import { withColors, withFontSizes } from '@wordpress/block-editor';
-import { compose } from '@wordpress/compose';
 import './editor.scss';
 
 import Edit from './edit';
@@ -17,9 +15,6 @@ registerBlockType(metadata.name, {
 		html: false,
 	},
 	attributes: metadata.attributes,
-	edit: compose(
-		withColors('backgroundColor', { textColor: 'color' }),
-		withFontSizes('fontSize'),
-	)((props) => <Edit {...props} apiSettings={window.andikaApiSettings} />),
+	edit: Edit,
 	save: Save,
 });

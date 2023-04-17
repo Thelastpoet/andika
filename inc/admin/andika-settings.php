@@ -50,7 +50,7 @@ class Andika_Settings {
 
 					<div id="help" class="andika-settings-tab">
 						<h2><?php _e('Documentation', 'andika'); ?></h2>
-						<?php include ANDIKA_PLUGIN_DIR . 'includes/admin/doc-content.php'; ?>
+						<?php include ANDIKA_PLUGIN_DIR . 'inc/admin/doc-content.php'; ?>
 					</div>
 				</div>
 			</div>

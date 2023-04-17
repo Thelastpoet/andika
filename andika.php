@@ -34,7 +34,7 @@ function andika_load_textdomain() {
 add_action('plugins_loaded', 'andika_load_textdomain');
 
 // Andika main class.
-require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika.php';
+require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika.php';
 
 // Initialize andika.
 function andika_initialize() {

@@ -1,20 +1,15 @@
 import { RichText } from '@wordpress/block-editor';
 
-export default function save({ attributes }) {
-    const { content, alignment, backgroundColor, textColor, fontSize, lineHeight } = attributes;
-
-    const fontSizeInRem = fontSize ? fontSize / 16 + 'rem' : undefined;
-
+export default function Save({ attributes }) {
     return (
         <RichText.Content
             tagName="p"
-            value={content}
+            value={attributes.content}
             style={{
-                textAlign: alignment,
-                fontSize: fontSizeInRem,
-                color: textColor,
-                backgroundColor: backgroundColor,
-                lineHeight: lineHeight ? lineHeight : undefined,
+                textAlign: attributes.alignment,
+                fontSize: attributes.fontSize,
+                color: attributes.textColor,
+                backgroundColor: attributes.backgroundColor,
             }}
         />
     );

@@ -14,9 +14,9 @@ class Andika {
     }
 
     private function andika_dependencies() {
-        require_once ANDIKA_PLUGIN_DIR . 'includes/admin/andika-settings.php';
-        require_once ANDIKA_PLUGIN_DIR . 'includes/class-andika-block.php';
-        require_once ANDIKA_PLUGIN_DIR . 'includes/class-openai-api.php';
+        require_once ANDIKA_PLUGIN_DIR . 'inc/admin/andika-settings.php';
+        require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-block.php';
+        require_once ANDIKA_PLUGIN_DIR . 'inc/class-openai-api.php';
     }
 
     /**

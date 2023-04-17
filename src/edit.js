@@ -3,6 +3,8 @@ import { RichText, useBlockProps } from '@wordpress/block-editor';
 import { Fragment, useState, useCallback } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
+import { useDispatch } from '@wordpress/data';
+import { createBlock } from '@wordpress/blocks';
 
 import { generateText } from './utils/andika-ai';
 
@@ -50,10 +52,11 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
 
     }, [postTitle, previousContent, content]);
 
+    const { replaceBlocks } = useDispatch(blockEditorStore);
+
     const blockProps = useBlockProps();
 
-    const { onSplit, onMerge } = AndikaBlockHandler();
-
+    const { onMerge, onReplace } = AndikaBlockHandler(attributes);
     return (
         <Fragment>
             <AndikaBlockControls
@@ -67,6 +70,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
                 setAttributes={setAttributes}
             />
             <RichText
+                identifier='content'
                 { ...blockProps }
                 tagName="p"
                 value={content}
@@ -75,6 +79,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
                     setContent(newContent);
                 }}
                 className="andika-placeholder"
+                
                 placeholder={__(
                     'Start typing and click the lightbulb icon to generate text...',
                     'andika',
@@ -86,15 +91,24 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
                     color: attributes.textColor,
                     backgroundColor: attributes.backgroundColor,
                 }}
-                onSplit={( value, isOriginal ) => {
-                    const block = onSplit(attributes, clientId)(value, isOriginal);
+                onSplit={(value, isOriginal) => {
                     if (isOriginal) {
-                        setContent(value);
-                        setAttributes({ content: value });
-                    } else {
-                        insertBlock(block, clientId);
+                      const updatedContent = content.slice(0, content.indexOf(value));
+                      setAttributes({ content: updatedContent });
+                      setContent(updatedContent);
                     }
-                }}
+                  
+                    const newAttributes = {
+                      ...attributes,
+                      content: value,
+                    };
+                  
+                    const block = createBlock("andika-block/andika", newAttributes);
+                    
+                    return block;
+                }}                  
+                onReplace={(blocks) => onReplace(blocks, clientId)}           
+                onRemove={ () => onReplace( []) }                
                 onMerge={(forward) => onMerge(forward, clientId)}
             />
         </Fragment>

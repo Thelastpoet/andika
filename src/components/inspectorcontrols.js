@@ -17,7 +17,7 @@ const AndikaInspectorControls = ({
     };
 
     return (
-        <InspectorControls>
+        <InspectorControls group="typography">
             <PanelBody title={__('Typography', 'andika')}>
                 <FontSizePicker
                     value={attributes.fontSize}
