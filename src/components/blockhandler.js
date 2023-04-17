@@ -2,12 +2,29 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { createBlock } from '@wordpress/blocks';
 
-export const AndikaBlockHandler = (attributes) => {
+export const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
   const { removeBlock, replaceBlocks, insertBlocks } = useDispatch(blockEditorStore);
 
   const { getBlockAttributes, getPreviousBlockClientId, getNextBlockClientId, getBlockName } = useSelect((select) =>
     select(blockEditorStore)
   );
+
+  const onSplit = (value, isOriginal) => {
+    if (isOriginal) {
+      const updatedContent = content.slice(0, content.indexOf(value));
+      setAttributes({ content: updatedContent });
+      setContent(updatedContent);
+    }
+
+    const newAttributes = {
+      ...attributes,
+      content: value,
+    };
+
+    const block = createBlock("andika-block/andika", newAttributes);
+    return block;
+  };
+
 
   const onReplace = (blocks, clientId) => {
     replaceBlocks(clientId, blocks.map((block, index) =>
@@ -45,6 +62,6 @@ export const AndikaBlockHandler = (attributes) => {
     }
   };
 
-  return { onReplace, onMerge };
+  return { onSplit, onReplace, onMerge };
 };
 export default AndikaBlockHandler;

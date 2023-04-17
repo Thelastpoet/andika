@@ -56,7 +56,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
 
     const blockProps = useBlockProps();
 
-    const { onMerge, onReplace } = AndikaBlockHandler(attributes);
+    const { onSplit, onMerge, onReplace } = AndikaBlockHandler(attributes, content, setAttributes, setContent);
     return (
         <Fragment>
             <AndikaBlockControls
@@ -91,22 +91,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
                     color: attributes.textColor,
                     backgroundColor: attributes.backgroundColor,
                 }}
-                onSplit={(value, isOriginal) => {
-                    if (isOriginal) {
-                      const updatedContent = content.slice(0, content.indexOf(value));
-                      setAttributes({ content: updatedContent });
-                      setContent(updatedContent);
-                    }
-                  
-                    const newAttributes = {
-                      ...attributes,
-                      content: value,
-                    };
-                  
-                    const block = createBlock("andika-block/andika", newAttributes);
-                    
-                    return block;
-                }}                  
+                onSplit={onSplit}                 
                 onReplace={(blocks) => onReplace(blocks, clientId)}           
                 onRemove={ () => onReplace( []) }                
                 onMerge={(forward) => onMerge(forward, clientId)}

@@ -68,7 +68,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const AndikaBlockHandler = attributes => {
+const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
   const {
     removeBlock,
     replaceBlocks,
@@ -80,6 +80,21 @@ const AndikaBlockHandler = attributes => {
     getNextBlockClientId,
     getBlockName
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.store));
+  const onSplit = (value, isOriginal) => {
+    if (isOriginal) {
+      const updatedContent = content.slice(0, content.indexOf(value));
+      setAttributes({
+        content: updatedContent
+      });
+      setContent(updatedContent);
+    }
+    const newAttributes = {
+      ...attributes,
+      content: value
+    };
+    const block = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_2__.createBlock)("andika-block/andika", newAttributes);
+    return block;
+  };
   const onReplace = (blocks, clientId) => {
     replaceBlocks(clientId, blocks.map((block, index) => index === 0 && block.name === name ? {
       ...block,
@@ -102,6 +117,7 @@ const AndikaBlockHandler = attributes => {
     }
   };
   return {
+    onSplit,
     onReplace,
     onMerge
   };
@@ -255,9 +271,10 @@ function Edit(_ref) {
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store);
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)();
   const {
+    onSplit,
     onMerge,
     onReplace
-  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_9__["default"])(attributes);
+  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_9__["default"])(attributes, content, setAttributes, setContent);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_7__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -286,21 +303,7 @@ function Edit(_ref) {
       color: attributes.textColor,
       backgroundColor: attributes.backgroundColor
     },
-    onSplit: (value, isOriginal) => {
-      if (isOriginal) {
-        const updatedContent = content.slice(0, content.indexOf(value));
-        setAttributes({
-          content: updatedContent
-        });
-        setContent(updatedContent);
-      }
-      const newAttributes = {
-        ...attributes,
-        content: value
-      };
-      const block = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)("andika-block/andika", newAttributes);
-      return block;
-    },
+    onSplit: onSplit,
     onReplace: blocks => onReplace(blocks, clientId),
     onRemove: () => onReplace([]),
     onMerge: forward => onMerge(forward, clientId)
