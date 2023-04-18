@@ -103,6 +103,24 @@ const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
   const onMerge = clientId => {
     const blockIndex = getBlockIndex(clientId);
     const blockOrder = getBlockOrder();
+
+    // Merge with the previous block
+    const prevBlockIndex = blockIndex - 1;
+    const prevBlockClientId = blockOrder[prevBlockIndex];
+    if (prevBlockClientId) {
+      const prevBlock = getBlock(prevBlockClientId);
+      if (prevBlock.name === "andika-block/andika") {
+        const mergedContent = prevBlock.attributes.content + content;
+        setAttributes({
+          content: mergedContent
+        });
+        setContent(mergedContent);
+        removeBlock(prevBlockClientId);
+        return;
+      }
+    }
+
+    // Merge with the next block
     const nextBlockIndex = blockIndex + 1;
     const nextBlockClientId = blockOrder[nextBlockIndex];
     if (nextBlockClientId) {
