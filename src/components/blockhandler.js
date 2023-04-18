@@ -76,8 +76,7 @@ export const AndikaBlockHandler = (attributes, content, setAttributes, setConten
         removeBlock(nextBlockClientId);
       }
     }
-  };
-  
+  };  
  
   return { onSplit, onReplace, onMerge };
 };
