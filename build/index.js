@@ -59,27 +59,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "AndikaBlockHandler": () => (/* binding */ AndikaBlockHandler),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
 
 
 
 const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
   const {
-    removeBlock,
     replaceBlocks,
-    insertBlocks
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.store);
+    removeBlock
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.store);
   const {
-    getBlockAttributes,
-    getPreviousBlockClientId,
-    getNextBlockClientId,
-    getBlockName
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.store));
+    getBlock,
+    getBlockOrder,
+    getBlockIndex
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.store), []);
   const onSplit = (value, isOriginal) => {
     if (isOriginal) {
       const updatedContent = content.slice(0, content.indexOf(value));
@@ -92,7 +90,7 @@ const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
       ...attributes,
       content: value
     };
-    const block = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_2__.createBlock)("andika-block/andika", newAttributes);
+    const block = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)("andika-block/andika", newAttributes);
     return block;
   };
   const onReplace = (blocks, clientId) => {
@@ -102,18 +100,21 @@ const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
       ...block.attributes
     } : block));
   };
-  const onMerge = (forward, clientId) => {
-    const previousBlock = getPreviousBlockClientId(clientId);
-    const nextBlock = getNextBlockClientId(clientId);
-    const destinationBlock = forward ? nextBlock : previousBlock;
-    if (destinationBlock && getBlockName(destinationBlock) === 'andika-block/andika') {
-      const currentContent = getBlockAttributes(clientId).content;
-      const destinationContent = getBlockAttributes(destinationBlock).content;
-      const updatedContent = forward ? currentContent + destinationContent : destinationContent + currentContent;
-      replaceBlocks(destinationBlock, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_2__.createBlock)('andika-block/andika', {
-        content: updatedContent
-      }));
-      removeBlock(clientId);
+  const onMerge = clientId => {
+    const blockIndex = getBlockIndex(clientId);
+    const blockOrder = getBlockOrder();
+    const nextBlockIndex = blockIndex + 1;
+    const nextBlockClientId = blockOrder[nextBlockIndex];
+    if (nextBlockClientId) {
+      const nextBlock = getBlock(nextBlockClientId);
+      if (nextBlock.name === "andika-block/andika") {
+        const mergedContent = content + nextBlock.attributes.content;
+        setAttributes({
+          content: mergedContent
+        });
+        setContent(mergedContent);
+        removeBlock(nextBlockClientId);
+      }
     }
   };
   return {
@@ -214,18 +215,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _utils_andika_ai__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/andika-ai */ "./src/utils/andika-ai.js");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils_andika_ai__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/andika-ai */ "./src/utils/andika-ai.js");
+/* harmony import */ var _components_blockhandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/blockhandler */ "./src/components/blockhandler.js");
 /* harmony import */ var _components_blockcontrols__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/blockcontrols */ "./src/components/blockcontrols.js");
 /* harmony import */ var _components_inspectorcontrols__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/inspectorcontrols */ "./src/components/inspectorcontrols.js");
-/* harmony import */ var _components_blockhandler__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/blockhandler */ "./src/components/blockhandler.js");
-
-
 
 
 
@@ -248,14 +245,14 @@ function Edit(_ref) {
   const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
 
   // Get the post title and previous block content
-  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
-  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
+  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
+  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.store).getBlocks());
   const previousContent = previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n');
   const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useCallback)(async () => {
     setIsLoading(true);
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     try {
-      const newText = await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_6__.generateText)(prompt, andika['stream'], partialText => {
+      const newText = await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_5__.generateText)(prompt, andika['stream'], partialText => {
         setContent(prevContent => prevContent + partialText);
       });
       setAttributes({
@@ -266,15 +263,12 @@ function Edit(_ref) {
     }
     setIsLoading(false);
   }, [postTitle, previousContent, content]);
-  const {
-    replaceBlocks
-  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store);
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)();
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.useBlockProps)();
   const {
     onSplit,
     onMerge,
     onReplace
-  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_9__["default"])(attributes, content, setAttributes, setContent);
+  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_6__["default"])(attributes, content, setAttributes, setContent);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_7__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -283,7 +277,7 @@ function Edit(_ref) {
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_components_inspectorcontrols__WEBPACK_IMPORTED_MODULE_8__["default"], {
     attributes: attributes,
     setAttributes: setAttributes
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.RichText, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.RichText, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
     identifier: "content"
   }, blockProps, {
     tagName: "p",
@@ -306,7 +300,7 @@ function Edit(_ref) {
     onSplit: onSplit,
     onReplace: blocks => onReplace(blocks, clientId),
     onRemove: () => onReplace([]),
-    onMerge: forward => onMerge(forward, clientId)
+    onMerge: () => onMerge(clientId)
   })));
 }
 

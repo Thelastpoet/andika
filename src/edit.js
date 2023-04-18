@@ -1,16 +1,14 @@
 import { __ } from '@wordpress/i18n';
-import { RichText, useBlockProps } from '@wordpress/block-editor';
-import { Fragment, useState, useCallback } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { useDispatch } from '@wordpress/data';
-import { createBlock } from '@wordpress/blocks';
+import { Fragment, useState, useCallback } from '@wordpress/element';
+import { RichText, useBlockProps } from '@wordpress/block-editor';
 
 import { generateText } from './utils/andika-ai';
 
+import AndikaBlockHandler from './components/blockhandler';
 import AndikaBlockControls from './components/blockcontrols';
 import AndikaInspectorControls from './components/inspectorcontrols';
-import AndikaBlockHandler from './components/blockhandler';
 
 export default function Edit({ attributes, setAttributes, isSelected, clientId }) {
     const [content, setContent] = useState(attributes.content || '');    
@@ -52,11 +50,10 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
 
     }, [postTitle, previousContent, content]);
 
-    const { replaceBlocks } = useDispatch(blockEditorStore);
-
     const blockProps = useBlockProps();
 
     const { onSplit, onMerge, onReplace } = AndikaBlockHandler(attributes, content, setAttributes, setContent);
+    
     return (
         <Fragment>
             <AndikaBlockControls
@@ -94,7 +91,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
                 onSplit={onSplit}                 
                 onReplace={(blocks) => onReplace(blocks, clientId)}           
                 onRemove={ () => onReplace( []) }                
-                onMerge={(forward) => onMerge(forward, clientId)}
+                onMerge={() => onMerge(clientId)}
             />
         </Fragment>
     );

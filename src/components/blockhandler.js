@@ -1,14 +1,15 @@
+import { createBlock } from '@wordpress/blocks';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { createBlock } from '@wordpress/blocks';
 
 export const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
-  const { removeBlock, replaceBlocks, insertBlocks } = useDispatch(blockEditorStore);
-
-  const { getBlockAttributes, getPreviousBlockClientId, getNextBlockClientId, getBlockName } = useSelect((select) =>
-    select(blockEditorStore)
-  );
-
+  const { replaceBlocks, removeBlock } = useDispatch(blockEditorStore);
+  const {
+    getBlock,   
+    getBlockOrder,
+    getBlockIndex,
+  } = useSelect((select) => select(blockEditorStore), []);
+ 
   const onSplit = (value, isOriginal) => {
     if (isOriginal) {
       const updatedContent = content.slice(0, content.indexOf(value));
@@ -25,7 +26,6 @@ export const AndikaBlockHandler = (attributes, content, setAttributes, setConten
     return block;
   };
 
-
   const onReplace = (blocks, clientId) => {
     replaceBlocks(clientId, blocks.map((block, index) =>
       (index === 0 && block.name === name)
@@ -38,30 +38,26 @@ export const AndikaBlockHandler = (attributes, content, setAttributes, setConten
     ));
   };
 
-  const onMerge = (forward, clientId) => {
-    const previousBlock = getPreviousBlockClientId(clientId);
-    const nextBlock = getNextBlockClientId(clientId);
-    const destinationBlock = forward ? nextBlock : previousBlock;
-
-    if (destinationBlock && getBlockName(destinationBlock) === 'andika-block/andika') {
-      const currentContent = getBlockAttributes(clientId).content;
-      const destinationContent = getBlockAttributes(destinationBlock).content;
-
-      const updatedContent = forward
-        ? currentContent + destinationContent
-        : destinationContent + currentContent;
-
-      replaceBlocks(
-        destinationBlock,
-        createBlock('andika-block/andika', {
-          content: updatedContent,
-        })
-      );
-
-      removeBlock(clientId);
+  const onMerge = (clientId) => {
+    const blockIndex = getBlockIndex(clientId);
+    const blockOrder = getBlockOrder();
+    const nextBlockIndex = blockIndex + 1;
+    const nextBlockClientId = blockOrder[nextBlockIndex];
+  
+    if (nextBlockClientId) {
+      const nextBlock = getBlock(nextBlockClientId);
+  
+      if (nextBlock.name === "andika-block/andika") {
+        const mergedContent = content + nextBlock.attributes.content;
+  
+        setAttributes({ content: mergedContent });
+        setContent(mergedContent);
+  
+        removeBlock(nextBlockClientId);
+      }
     }
   };
-
+ 
   return { onSplit, onReplace, onMerge };
 };
 export default AndikaBlockHandler;
