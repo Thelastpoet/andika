@@ -28,27 +28,22 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
         .map((block) => block.attributes.content)
         .join('\n');
         
-    const onGenerateClick = useCallback(async () => {
-        setIsLoading(true);
+        const onGenerateClick = useCallback(async () => {
+            setIsLoading(true);
+            
+            const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
+            
+            try {
+                const newText = await generateText(prompt);
+                setContent((prevContent) => prevContent + newText);
+                setAttributes({ content: content + newText }); // Update the content attribute with the new generated text
+            } catch (error) {
+                console.error(error);
+            }
+            
+            setIsLoading(false);
         
-        const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
-        
-        try {
-            const newText = await generateText(
-                prompt,
-                andika['stream'],
-                (partialText) => {
-                    setContent((prevContent) => prevContent + partialText);
-                }
-            );
-            setAttributes({ content: newText });
-        } catch (error) {
-            console.error(error);
-        }
-        
-        setIsLoading(false);
-
-    }, [postTitle, previousContent, content]);
+        }, [postTitle, previousContent, content]);        
 
     const blockProps = useBlockProps();
 

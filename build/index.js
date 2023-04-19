@@ -270,12 +270,11 @@ function Edit(_ref) {
     setIsLoading(true);
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     try {
-      const newText = await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_5__.generateText)(prompt, andika['stream'], partialText => {
-        setContent(prevContent => prevContent + partialText);
-      });
+      const newText = await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_5__.generateText)(prompt);
+      setContent(prevContent => prevContent + newText);
       setAttributes({
-        content: newText
-      });
+        content: content + newText
+      }); // Update the content attribute with the new generated text
     } catch (error) {
       console.error(error);
     }
@@ -368,50 +367,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "generateText": () => (/* binding */ generateText)
 /* harmony export */ });
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
+
 async function generateText(prompt) {
-  let stream = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  let onProgress = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  const apiUrl = `${andika.rest_url}andika/v1/andika-ai`;
   try {
-    const response = await fetch(andika.api_url, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-WP-Nonce': andika.api_nonce
       },
       body: JSON.stringify({
-        prompt,
-        stream: !!stream
+        prompt
       })
     });
     if (!response.ok) {
-      throw new Error(__('Error generating text. Please check your API key and settings.', 'andika'));
+      throw new Error((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Error generating text. Please check your API key and settings.', 'andika'));
     }
-    if (stream) {
-      const reader = response.body.getReader();
-      let result = '';
-      while (true) {
-        const {
-          done,
-          value
-        } = await reader.read();
-        if (done) {
-          break;
-        }
-        const partialJson = new TextDecoder('utf-8').decode(value);
-        const partialResult = JSON.parse(partialJson);
-        const newText = partialResult.generated_text;
-        result += newText;
-        if (onProgress) {
-          onProgress(newText);
-        }
-      }
-      return result;
-    } else {
+    if (response.ok) {
       const jsonResponse = await response.json();
-      return jsonResponse.generated_text;
+      return jsonResponse.generated_text || '';
     }
   } catch (error) {
-    throw new Error(__('Error generating text. Please check your API key and settings.', 'andika'));
+    throw new Error((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Error generating text. Please check your API key and settings.', 'andika'));
   }
 }
 
