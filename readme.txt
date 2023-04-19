@@ -1,52 +1,53 @@
 === Andika ===
 Contributors: ammanulah
-Tags: writing, AI, block editor, natural language processing
+Tags: Writing, AI, block editor, OpenAI, AI-assisted-writing
 Requires at least: 5.0
 Tested up to: 5.8
 Stable tag: 1.0.9
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
-Andika brings the power of AI to the WordPress block editor for seamless writing.
+Andika (Swahili for "Write") harnesses the power of AI to enhance the writing experience within the WordPress block editor, putting you in control of your content.
 
 == Description ==
 
-Andika is a WordPress plugin that uses natural language processing (NLP) and machine learning (ML) algorithms to enhance the writing experience in the WordPress block editor. With Andika, you can:
+Andika is a WordPress plugin that leverages AI technology to improve the writing experience in the WordPress block editor. With Andika, you can:
 
-- Generate high-quality, original content based on your topic and preferences
-- Automatically summarize your content for easy skimming and comprehension
-- Get writing suggestions and alerts for grammar, tone, and style
-- And more!
-
-Andika is easy to use and integrates seamlessly with the WordPress block editor. Try it out today and experience the future of writing!
+- Write naturally and efficiently, producing high-quality content with the assistance of AI.
+- Maintain control over your content by directing the AI on what to write and how to write based on your ideas.
+- Overcome writer's block, as Andika can complete your words and sentences for you.
+- Edit everything to ensure that the content is 100% original and truly yours.
+- Andika is designed for natural writers who love to be in control of their work, with AI serving as a helpful assistant in the writing process.
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/andika` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Use the Andika block in the WordPress block editor to start writing smarter!
+1. Install the plugin through the WordPress plugins screen directly or upload the plugin files to the /wp-content/plugins/andika directory manually.
+Activate the plugin through the 'Plugins' settings in WordPress.
+2. Set up your OpenAI key from the Andika Menu (other settings are optional). Make sure to select the SEO plugin from the SEO settings. Choose the current SEO plugin you use on your website. You will find the Andika block when creating your post.
+3. Use the Andika block in the WordPress block editor to start writing smarter, faster, and under your guidance.
 
 == Frequently Asked Questions ==
 
 = How does Andika work? =
 
-Andika uses advanced NLP and ML algorithms to analyze your content and provide suggestions for improvement. Our algorithms are based on the latest research in the field, and are constantly updated to ensure the best possible performance.
+Andika is a helper AI that uses OpenAI models to assist you in writing better and faster. It employs Large Language Models to complete your words, sentences, and help you create original content.
+
+Andika is under active development, and soon you'll have even greater control over its content output, ensuring original content owned by you, the writer.
 
 = Can I customize the settings and preferences for Andika? =
 
-Yes! Andika provides a variety of options and settings that you can customize to fit your specific needs and preferences. For example, you can choose the tone and style of your content, adjust the level of detail in your summaries, and more.
+Yes! Andika provides a variety of options and settings that you can customize to fit your specific needs and preferences.
 
 = Is Andika free to use? =
 
-Andika offers both free and premium plans, depending on your needs and usage. The free plan includes basic features and functionality, while the premium plans offer more advanced features and support.
+Yes, Andika is available for download from the WordPress Plugins Repository.
 
 == Screenshots ==
 
-1. The Andika block in the WordPress block editor.
-2. The Andika settings panel, where you can customize your preferences and settings.
-3. Andika in action, generating high-quality, original content for your website.
+The Andika block in the WordPress block editor.
+The Andika settings panel, where you can customize your preferences and settings.
+Andika in action, generating high-quality, original content for your website.
 
 == Changelog ==
-
 = 1.0.0 =
 Initial Release
