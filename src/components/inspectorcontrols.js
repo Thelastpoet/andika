@@ -10,14 +10,14 @@ const AndikaInspectorControls = ({
     attributes,
     setAttributes,
 }) => {
-    const { lineHeight } = attributes;
+    const { lineHeight } = attributes;     
 
     const onChangeLineHeight = (value) => {
         setAttributes({ lineHeight: value });
     };
 
     return (
-        <InspectorControls group="typography">
+        <InspectorControls>
             <PanelBody title={__('Typography', 'andika')}>
                 <FontSizePicker
                     value={attributes.fontSize}

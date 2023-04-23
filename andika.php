@@ -3,7 +3,7 @@
  * Plugin Name: Andika - Your AI Witing Companion
  * Plugin URI: https:nabaleka.com
  * Description: Andika brings the power of AI to the WordPress block editor for seamless writing.
- * Version: 1.5.9
+ * Version: 1.6.9
  * Author: Ammanulah Emmanuel
  * Author URI: https://nabaleka.com
  * Requires at least: 5.9
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'ANDIKA_VERSION', '1.5.9' );
+define( 'ANDIKA_VERSION', '1.6.9' );
 define( 'ANDIKA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ANDIKA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

@@ -180,9 +180,7 @@ const AndikaInspectorControls = _ref => {
       lineHeight: value
     });
   };
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, {
-    group: "typography"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Typography', 'andika')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.FontSizePicker, {
     value: attributes.fontSize,
@@ -228,20 +226,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Edit)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _utils_andika_ai__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/andika-ai */ "./src/utils/andika-ai.js");
-/* harmony import */ var _components_blockhandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/blockhandler */ "./src/components/blockhandler.js");
-/* harmony import */ var _components_blockcontrols__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/blockcontrols */ "./src/components/blockcontrols.js");
-/* harmony import */ var _components_inspectorcontrols__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/inspectorcontrols */ "./src/components/inspectorcontrols.js");
-
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/andika-ai */ "./src/utils/andika-ai.js");
+/* harmony import */ var _components_blockhandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/blockhandler */ "./src/components/blockhandler.js");
+/* harmony import */ var _components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/blockcontrols */ "./src/components/blockcontrols.js");
+/* harmony import */ var _components_inspectorcontrols__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/inspectorcontrols */ "./src/components/inspectorcontrols.js");
 
 
 
@@ -259,54 +255,45 @@ function Edit(_ref) {
     isSelected,
     clientId
   } = _ref;
-  const [content, setContent] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(attributes.content || '');
-  const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
-
-  // Get the post title and previous block content
-  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
-  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.store).getBlocks());
-  const previousContent = previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n');
-  const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useCallback)(async () => {
+  const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [content, setContent] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(attributes.content || '');
+  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
+  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
+  const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
+  const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
     setIsLoading(true);
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     try {
-      const newText = await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_5__.generateText)(prompt);
-      setContent(prevContent => prevContent + newText);
-      setAttributes({
-        content: content + newText
-      }); // Update the content attribute with the new generated text
+      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  }, [postTitle, previousContent, content]);
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.useBlockProps)();
+  }, [content, postTitle, previousContent, setAttributes]);
   const {
     onSplit,
     onMerge,
     onReplace
-  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_6__["default"])(attributes, content, setAttributes, setContent);
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_7__["default"], {
+  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, content, setAttributes, setContent);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
     isLoading: isLoading,
     onGenerateClick: onGenerateClick
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_components_inspectorcontrols__WEBPACK_IMPORTED_MODULE_8__["default"], {
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_inspectorcontrols__WEBPACK_IMPORTED_MODULE_7__["default"], {
     attributes: attributes,
     setAttributes: setAttributes
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.RichText, (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
-    identifier: "content"
-  }, blockProps, {
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.RichText, {
     tagName: "p",
     value: content,
     onChange: newContent => {
       setAttributes({
         content: newContent
       });
-      setContent(newContent);
     },
     className: "andika-placeholder",
-    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Start typing and click the lightbulb icon to generate text...', 'andika'),
+    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Start typing and click the lightbulb icon to generate text...', 'andika'),
     isSelected: isSelected,
     style: {
       textAlign: attributes.alignment,
@@ -318,7 +305,7 @@ function Edit(_ref) {
     onReplace: blocks => onReplace(blocks, clientId),
     onRemove: () => onReplace([]),
     onMerge: () => onMerge(clientId)
-  })));
+  }));
 }
 
 /***/ }),
@@ -369,30 +356,49 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var eventsource_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eventsource-parser */ "./node_modules/eventsource-parser/dist/index.js");
 
-async function generateText(prompt) {
-  const apiUrl = `${andika.rest_url}andika/v1/andika-ai`;
+
+async function generateText(prompt, content, setContent) {
+  const streamParam = 'stream=true';
+  const promptParam = `prompt=${encodeURIComponent(prompt)}`;
+  const nonceParam = `_wpnonce=${andika.api_nonce}`;
+  const url = `${andika.rest_url}andika/v1/andika-ai?${promptParam}&${streamParam}&${nonceParam}`;
+  let generatedText = '';
   try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-WP-Nonce': andika.api_nonce
-      },
-      body: JSON.stringify({
-        prompt
-      })
-    });
+    const response = await fetch(url);
     if (!response.ok) {
-      throw new Error((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Error generating text. Please check your API key and settings.', 'andika'));
+      throw new Error(`Error fetching text from WordPress REST API: ${response.status}`);
     }
-    if (response.ok) {
-      const jsonResponse = await response.json();
-      return jsonResponse.generated_text || '';
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    const parser = (0,eventsource_parser__WEBPACK_IMPORTED_MODULE_1__.createParser)(async event => {
+      if (event.type === 'event') {
+        const data = event.data;
+        try {
+          const json = JSON.parse(data);
+          const text = json.text;
+          setContent(content + text);
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
+        }
+      }
+    });
+    while (true) {
+      const {
+        done,
+        value
+      } = await reader.read();
+      if (done) {
+        break;
+      }
+      const decodedChunk = decoder.decode(value);
+      parser.feed(decodedChunk);
     }
   } catch (error) {
-    throw new Error((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Error generating text. Please check your API key and settings.', 'andika'));
+    console.error('Error in generateText:', error);
   }
+  return generatedText;
 }
 
 /***/ }),
@@ -469,30 +475,139 @@ module.exports = window["wp"]["i18n"];
 
 /***/ }),
 
-/***/ "./node_modules/@babel/runtime/helpers/esm/extends.js":
-/*!************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!
-  \************************************************************/
+/***/ "./node_modules/eventsource-parser/dist/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/eventsource-parser/dist/index.js ***!
+  \*******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _extends)
+/* harmony export */   "createParser": () => (/* binding */ createParser)
 /* harmony export */ });
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
+function createParser(onParse) {
+  let isFirstChunk;
+  let buffer;
+  let startingPosition;
+  let startingFieldLength;
+  let eventId;
+  let eventName;
+  let data;
+  reset();
+  return {
+    feed,
+    reset
+  };
+  function reset() {
+    isFirstChunk = true;
+    buffer = "";
+    startingPosition = 0;
+    startingFieldLength = -1;
+    eventId = void 0;
+    eventName = void 0;
+    data = "";
+  }
+  function feed(chunk) {
+    buffer = buffer ? buffer + chunk : chunk;
+    if (isFirstChunk && hasBom(buffer)) {
+      buffer = buffer.slice(BOM.length);
+    }
+    isFirstChunk = false;
+    const length = buffer.length;
+    let position = 0;
+    let discardTrailingNewline = false;
+    while (position < length) {
+      if (discardTrailingNewline) {
+        if (buffer[position] === "\n") {
+          ++position;
+        }
+        discardTrailingNewline = false;
+      }
+      let lineLength = -1;
+      let fieldLength = startingFieldLength;
+      let character;
+      for (let index = startingPosition; lineLength < 0 && index < length; ++index) {
+        character = buffer[index];
+        if (character === ":" && fieldLength < 0) {
+          fieldLength = index - position;
+        } else if (character === "\r") {
+          discardTrailingNewline = true;
+          lineLength = index - position;
+        } else if (character === "\n") {
+          lineLength = index - position;
         }
       }
+      if (lineLength < 0) {
+        startingPosition = length - position;
+        startingFieldLength = fieldLength;
+        break;
+      } else {
+        startingPosition = 0;
+        startingFieldLength = -1;
+      }
+      parseEventStreamLine(buffer, position, fieldLength, lineLength);
+      position += lineLength + 1;
     }
-    return target;
-  };
-  return _extends.apply(this, arguments);
+    if (position === length) {
+      buffer = "";
+    } else if (position > 0) {
+      buffer = buffer.slice(position);
+    }
+  }
+  function parseEventStreamLine(lineBuffer, index, fieldLength, lineLength) {
+    if (lineLength === 0) {
+      if (data.length > 0) {
+        onParse({
+          type: "event",
+          id: eventId,
+          event: eventName || void 0,
+          data: data.slice(0, -1)
+          // remove trailing newline
+        });
+
+        data = "";
+        eventId = void 0;
+      }
+      eventName = void 0;
+      return;
+    }
+    const noValue = fieldLength < 0;
+    const field = lineBuffer.slice(index, index + (noValue ? lineLength : fieldLength));
+    let step = 0;
+    if (noValue) {
+      step = lineLength;
+    } else if (lineBuffer[index + fieldLength + 1] === " ") {
+      step = fieldLength + 2;
+    } else {
+      step = fieldLength + 1;
+    }
+    const position = index + step;
+    const valueLength = lineLength - step;
+    const value = lineBuffer.slice(position, position + valueLength).toString();
+    if (field === "data") {
+      data += value ? "".concat(value, "\n") : "\n";
+    } else if (field === "event") {
+      eventName = value;
+    } else if (field === "id" && !value.includes("\0")) {
+      eventId = value;
+    } else if (field === "retry") {
+      const retry = parseInt(value, 10);
+      if (!Number.isNaN(retry)) {
+        onParse({
+          type: "reconnect-interval",
+          value: retry
+        });
+      }
+    }
+  }
 }
+const BOM = [239, 187, 191];
+function hasBom(buffer) {
+  return BOM.every((charCode, index) => buffer.charCodeAt(index) === charCode);
+}
+
+//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 

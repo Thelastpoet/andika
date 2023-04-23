@@ -17,7 +17,7 @@ class Andika {
         require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-rest.php';
         require_once ANDIKA_PLUGIN_DIR . 'inc/admin/andika-settings.php';
         require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-block.php';
-        require_once ANDIKA_PLUGIN_DIR . 'inc/class-openai-api.php';
+        require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-api.php';
     }
 
     /**
@@ -28,7 +28,6 @@ class Andika {
         $settings = new Andika_Settings();
         add_action('admin_menu', array($settings, 'register_settings_page'));
         add_action('admin_init', array($settings, 'register_settings'));
-
         
         add_action('admin_enqueue_scripts', array($settings, 'enqueue_admin_assets'));
 
@@ -42,6 +41,6 @@ class Andika {
     }
 
     public function run() {
-        // Let's do this later when we come back to this file
+        // Let's do this later when we come back to this file (*everything works though)
     }
 }
