@@ -257,25 +257,42 @@ function Edit(_ref) {
   } = _ref;
   const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const [content, setContent] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(attributes.content || '');
-  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
-  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
-  const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
-  const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
-    setIsLoading(true);
-    const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
-    try {
-      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [content, postTitle, previousContent, setAttributes]);
   const {
     onSplit,
     onMerge,
     onReplace
   } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, content, setAttributes, setContent);
+  const RichTextRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+  const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
+  const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
+  const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
+  const setCaretPosition = editableRef => {
+    if (!editableRef.current) return;
+    const range = document.createRange();
+    const sel = window.getSelection();
+    const lastChild = editableRef.current.lastChild;
+    if (lastChild) {
+      range.setStartAfter(lastChild);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    editableRef.current.focus();
+  };
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    setCaretPosition(RichTextRef);
+  }, [content]);
+  const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
+    setIsLoading(true);
+    const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
+    try {
+      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, onSplit);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [content, postTitle, previousContent, setAttributes, onSplit]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -285,6 +302,7 @@ function Edit(_ref) {
     attributes: attributes,
     setAttributes: setAttributes
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.RichText, {
+    ref: RichTextRef,
     tagName: "p",
     value: content,
     onChange: newContent => {
@@ -293,7 +311,7 @@ function Edit(_ref) {
       });
     },
     className: "andika-placeholder",
-    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Start typing and click the lightbulb icon to generate next words...', 'andika'),
+    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Type and click the lightbulb icon to generate text...', 'andika'),
     isSelected: isSelected,
     style: {
       textAlign: attributes.alignment,
@@ -364,7 +382,6 @@ async function generateText(prompt, content, setContent) {
   const promptParam = `prompt=${encodeURIComponent(prompt)}`;
   const nonceParam = `_wpnonce=${andika.api_nonce}`;
   const url = `${andika.rest_url}andika/v1/andika-ai?${promptParam}&${streamParam}&${nonceParam}`;
-  let generatedText = '';
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -378,27 +395,29 @@ async function generateText(prompt, content, setContent) {
         try {
           const json = JSON.parse(data);
           const char = json.char;
-          setContent(prevContent => prevContent + char);
+          setContent(prevConent => prevConent + char);
         } catch (e) {
           console.error('Error parsing JSON:', e);
         }
       }
     });
-    while (true) {
-      const {
-        done,
-        value
-      } = await reader.read();
-      if (done) {
-        break;
+    return new Promise(async resolve => {
+      while (true) {
+        const {
+          done,
+          value
+        } = await reader.read();
+        if (done) {
+          resolve();
+          break;
+        }
+        const decodedChunk = decoder.decode(value);
+        parser.feed(decodedChunk);
       }
-      const decodedChunk = decoder.decode(value);
-      parser.feed(decodedChunk);
-    }
+    });
   } catch (error) {
     console.error('Error in generateText:', error);
   }
-  return generatedText;
 }
 
 /***/ }),

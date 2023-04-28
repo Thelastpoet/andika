@@ -7,8 +7,6 @@ export async function generateText(prompt, content, setContent) {
   const nonceParam = `_wpnonce=${andika.api_nonce}`;
   const url = `${andika.rest_url}andika/v1/andika-ai?${promptParam}&${streamParam}&${nonceParam}`;
 
-  let generatedText = '';
-
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -23,24 +21,25 @@ export async function generateText(prompt, content, setContent) {
         try {
           const json = JSON.parse(data);
           const char = json.char;
-          setContent((prevContent) => prevContent + char);
+          setContent((prevConent) => prevConent + char);
         } catch (e) {
           console.error('Error parsing JSON:', e);
         }
       }
     });
-    
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
+
+    return new Promise(async (resolve) => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          resolve();
+          break;
+        }
+        const decodedChunk = decoder.decode(value);
+        parser.feed(decodedChunk);
       }
-      const decodedChunk = decoder.decode(value);
-      parser.feed(decodedChunk);
-    }
+    });
   } catch (error) {
     console.error('Error in generateText:', error);
   }
-
-  return generatedText;
 }
