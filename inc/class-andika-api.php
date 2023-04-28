@@ -83,28 +83,20 @@ class Andika_OpenAI_API {
         $response = wp_remote_request($url, $args);
         
         if ($callback) {
-            $concatenatedText = '';
             $content = wp_remote_retrieve_body($response);
             $lines = explode("\n", $content);
-
+        
             foreach ($lines as $line) {
                 if (substr($line, 0, 5) === 'data:') {
                     $data_str = substr($line, 5);
                     $data = json_decode($data_str, true);
-
-                    if (isset($data['choices'][0]['text'])) {
-                        $concatenatedText .= $data['choices'][0]['text'];
-                    } else {
-                        if (isset($data['choices'][0]['message']['content'])) {
-                            $concatenatedText .= $data['choices'][0]['message']['content'];
-                        } elseif (isset($data['choices'][0]['delta']['content'])) {
-                            $concatenatedText .= $data['choices'][0]['delta']['content'];
-                        }
-                    }                    
+        
+                    $text = $data['choices'][0]['text'] ?? ($data['choices'][0]['message']['content'] ?? ($data['choices'][0]['delta']['content'] ?? ''));
+                    for ($i = 0; $i < strlen($text); $i++) {
+                        $callback(array('char' => $text[$i]));
+                    }
                 }
             }
-            // Send the final result to the client
-            $callback(array('text' => $concatenatedText));
         } else {
             if (is_wp_error($response)) {
                 return $response->get_error_message();

@@ -22,14 +22,14 @@ export async function generateText(prompt, content, setContent) {
         const data = event.data;
         try {
           const json = JSON.parse(data);
-          const text = json.text;
-          setContent(content + text);
+          const char = json.char;
+          setContent((prevContent) => prevContent + char);
         } catch (e) {
           console.error('Error parsing JSON:', e);
         }
       }
     });
-
+    
     while (true) {
       const { done, value } = await reader.read();
       if (done) {

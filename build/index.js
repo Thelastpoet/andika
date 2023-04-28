@@ -293,7 +293,7 @@ function Edit(_ref) {
       });
     },
     className: "andika-placeholder",
-    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Start typing and click the lightbulb icon to generate text...', 'andika'),
+    placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Start typing and click the lightbulb icon to generate next words...', 'andika'),
     isSelected: isSelected,
     style: {
       textAlign: attributes.alignment,
@@ -377,8 +377,8 @@ async function generateText(prompt, content, setContent) {
         const data = event.data;
         try {
           const json = JSON.parse(data);
-          const text = json.text;
-          setContent(content + text);
+          const char = json.char;
+          setContent(prevContent => prevContent + char);
         } catch (e) {
           console.error('Error parsing JSON:', e);
         }

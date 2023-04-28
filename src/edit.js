@@ -66,7 +66,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
                 }}
                 className="andika-placeholder"
                 placeholder={__(
-                    'Start typing and click the lightbulb icon to generate text...',
+                    'Start typing and click the lightbulb icon to generate next words...',
                     'andika',
                 )}
                 isSelected={isSelected}

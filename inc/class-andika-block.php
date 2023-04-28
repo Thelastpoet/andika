@@ -5,7 +5,7 @@ class Andika_Block {
         wp_register_script(
 			'andika-block-editor',
 			ANDIKA_PLUGIN_URL . 'build/index.js',
-			array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-api-fetch'),
+			array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor', 'wp-data',  'wp-components', 'wp-api-fetch', 'wp-edit-post', 'wp-block-editor' ),
 			ANDIKA_VERSION,
 			true
 		);
