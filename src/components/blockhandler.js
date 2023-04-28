@@ -28,7 +28,7 @@ export const AndikaBlockHandler = (attributes, content, setAttributes, setConten
 
   const onReplace = (blocks, clientId) => {
     replaceBlocks(clientId, blocks.map((block, index) =>
-      (index === 0 && block.name === name)
+      (index === 0 && block.name === "andika-block/andika")
         ? {
             ...block,
             ...attributes,

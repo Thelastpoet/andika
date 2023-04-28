@@ -94,7 +94,7 @@ const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
     return block;
   };
   const onReplace = (blocks, clientId) => {
-    replaceBlocks(clientId, blocks.map((block, index) => index === 0 && block.name === name ? {
+    replaceBlocks(clientId, blocks.map((block, index) => index === 0 && block.name === "andika-block/andika" ? {
       ...block,
       ...attributes,
       ...block.attributes
@@ -286,13 +286,13 @@ function Edit(_ref) {
     setIsLoading(true);
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     try {
-      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, onSplit);
+      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, onSplit), onReplace, clientId;
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
-  }, [content, postTitle, previousContent, setAttributes, onSplit]);
+  }, [content, postTitle, previousContent, setAttributes, onSplit, onReplace, clientId]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -377,11 +377,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var eventsource_parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eventsource-parser */ "./node_modules/eventsource-parser/dist/index.js");
 
 
-async function generateText(prompt, content, setContent) {
+async function generateText(prompt, content, setContent, onSplit, onReplace, clientId) {
   const streamParam = 'stream=true';
   const promptParam = `prompt=${encodeURIComponent(prompt)}`;
   const nonceParam = `_wpnonce=${andika.api_nonce}`;
   const url = `${andika.rest_url}andika/v1/andika-ai?${promptParam}&${streamParam}&${nonceParam}`;
+  let sentenceCount = 0;
+  console.log('Starting generateText function');
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -395,7 +397,23 @@ async function generateText(prompt, content, setContent) {
         try {
           const json = JSON.parse(data);
           const char = json.char;
-          setContent(prevConent => prevConent + char);
+          if (char === '.') {
+            sentenceCount += 1;
+            console.log('Sentence count:', sentenceCount);
+            if (sentenceCount === 2) {
+              setContent(prevContent => {
+                const updatedContent = prevContent + char;
+                console.log('Calling onSplit with content:', updatedContent);
+                onSplit(updatedContent, onReplace, clientId);
+                return updatedContent;
+              });
+              sentenceCount = 0;
+            } else {
+              setContent(prevContent => prevContent + char);
+            }
+          } else {
+            setContent(prevContent => prevContent + char);
+          }
         } catch (e) {
           console.error('Error parsing JSON:', e);
         }

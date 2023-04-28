@@ -59,14 +59,14 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
       const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     
       try {
-        await generateText(prompt, content, setContent, onSplit);
+        await generateText(prompt, content, setContent, onSplit), onReplace, clientId;
       } catch (error) {
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     
-    }, [content, postTitle, previousContent, setAttributes, onSplit]);      
+    }, [content, postTitle, previousContent, setAttributes, onSplit, onReplace, clientId]);      
   
     return (
       <Fragment>
