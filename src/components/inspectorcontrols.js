@@ -22,6 +22,7 @@ const AndikaInspectorControls = ({
                 <FontSizePicker
                     value={attributes.fontSize}
                     onChange={(value) => setAttributes({ fontSize: value })}
+                    __nextHasNoMarginBottom={true}
                 />
                 <RangeControl
                     label={__('Line height', 'andika')}

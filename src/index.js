@@ -5,6 +5,7 @@ import './editor.scss';
 import Edit from './edit';
 import Save from './save';
 import metadata from './block.json';
+import transforms from './transforms';
 
 registerBlockType(metadata.name, {
 	title: __(metadata.title),
@@ -12,9 +13,12 @@ registerBlockType(metadata.name, {
 	category: metadata.category,
 	description: __(metadata.description),
 	supports: {
-		html: false,
+		html: true,
+		className: false,
 	},
 	attributes: metadata.attributes,
+	transforms,
 	edit: Edit,
 	save: Save,
+	
 });

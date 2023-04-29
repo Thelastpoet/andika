@@ -39,7 +39,7 @@ class Andika_OpenAI_API {
     
         if ($this->model === 'gpt-3.5-turbo' || $this->model === 'gpt-4') {
             $options['messages'] = array(
-                array("role" => "user", "content" => $prompt)
+                array("role" => "system", "role" => "user", "content" => $prompt)
             );
         } else {
             $options['prompt'] = $prompt;
@@ -109,7 +109,7 @@ class Andika_OpenAI_API {
             } elseif (isset($body['choices'][0]['message']['content'])) {
                 return $body['choices'][0]['message']['content'];
             }
-            return __('Error generating text! Did you set a valid API Key?', 'andika');
+            return __('Error generating text! Check your API Key?', 'andika');
         }
     }   
     

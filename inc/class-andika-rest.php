@@ -30,6 +30,15 @@ class Andika_REST extends WP_REST_Controller {
     }
 
     /**
+     * Set headers for the streaming response
+     */
+    private function set_streaming_headers() {
+        header('Content-Type: text/event-stream');
+        header('Cache-Control: no-cache');
+        header('Connection: keep-alive');
+    }
+
+    /**
      * Callback function to handle the request to the custom endpoint
      *
      * @param WP_REST_Request $request The REST API request object
@@ -42,35 +51,38 @@ class Andika_REST extends WP_REST_Controller {
         $api_key = get_option('andika_openai_api_key');
     
         if (empty($api_key)) {
-            return new WP_REST_Response(array('error' => 'Andika OpenAI API key is missing. Please configure it in the plugin settings.'), 500);
+            return new WP_REST_Response(
+                array('error' => 'Andika OpenAI API key is missing. Please configure it in the plugin settings.'),
+                500
+            );
         }
     
         // Create an instance of the Andika_OpenAI_API class
         $openai_api = new Andika_OpenAI_API($api_key);
     
         // Create a callback function to handle streaming responses
-        try {            
-            header('Content-Type: text/event-stream');
-            header('Cache-Control: no-cache');
-            header('Connection: keep-alive');
+        try {
+            $this->set_streaming_headers();
 
             if (ob_get_length()) {
                 ob_end_clean();
-            }            
+            }
     
             // Generate text using the OpenAI API
-            $openai_api->generate_text($prompt, array('callback' => function($data) use ($stream) {
-                if (isset($data['char'])) {
-                    echo "data: " . json_encode(['char' => $data['char']]) . "\n\n";
-                    flush();
-                    usleep(50000); // Adjust the delay here (50000 microseconds = 50 milliseconds)
-                }
-            }, 'stream' => $stream));         
+            $openai_api->generate_text($prompt, array(
+                'callback' => function($data) use ($stream) {
+                    if (isset($data['char'])) {
+                        echo "data: " . json_encode(['char' => $data['char']]) . "\n\n";
+                        flush();
+                        usleep(50000);
+                    }
+                }, 'stream' => $stream
+            ));         
     
             // Send a final message to close the connection
             echo "event: close\n";
             flush();
-            exit();
+            wp_die();
         } catch (Exception $e) {
             // Log the error
             if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -79,15 +91,8 @@ class Andika_REST extends WP_REST_Controller {
     
             return new WP_REST_Response(array('error' => $e->getMessage()), 500);
         }
-    }   
-    
-    /**
-     * Permission callback function to check if the current user can access the custom endpoint
-     *
-     * @param WP_REST_Request $request The REST API request object
-     *
-     * @return boolean Whether the current user can access the custom endpoint
-     */
+    }
+
     public function andika_permissions_check(WP_REST_Request $request) {
         // Get the current user
         $current_user = wp_get_current_user();
@@ -99,7 +104,7 @@ class Andika_REST extends WP_REST_Controller {
             return false;
         }
     }
-    
+
     /**
      * Get the namespace for the custom endpoint
      *

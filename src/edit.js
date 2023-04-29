@@ -34,20 +34,26 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
 
     const setCaretPosition = (editableRef) => {
       if (!editableRef.current) return;
-
+    
       const range = document.createRange();
       const sel = window.getSelection();
-      const lastChild = editableRef.current.lastChild;
       
-      if (lastChild) {
-        range.setStartAfter(lastChild);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
+      if (content === '') {
+        // Set the caret to the start of the placeholder when the content is empty
+        range.setStart(editableRef.current, 0);
+      } else {
+        const lastChild = editableRef.current.lastChild;
+        if (lastChild) {
+          // Set the caret to the end of the content when content is not empty
+          range.setStartAfter(lastChild);
+        }
       }
-
+      
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
       editableRef.current.focus();
-    };   
+    };    
     
     useEffect(() => {
       setCaretPosition(RichTextRef);
@@ -59,14 +65,14 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
       const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     
       try {
-        await generateText(prompt, content, setContent, onSplit), onReplace, clientId;
+        await generateText(prompt, content, setContent);
       } catch (error) {
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     
-    }, [content, postTitle, previousContent, setAttributes, onSplit, onReplace, clientId]);      
+    }, [content, postTitle, previousContent]);         
   
     return (
       <Fragment>

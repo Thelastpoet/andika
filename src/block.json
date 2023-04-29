@@ -50,6 +50,7 @@
     "typography": {
       "fontSize": true,
       "lineHeight": true
-    }
+    },
+    "className": false
   }  
 }
