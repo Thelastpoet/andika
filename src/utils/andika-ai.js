@@ -1,43 +1,32 @@
 import { __ } from '@wordpress/i18n';
-import { createParser } from 'eventsource-parser';
-import { createBlock } from '@wordpress/blocks';
+
+import Andika_OpenAI_API from './andika-api';
 
 export async function generateText(prompt, content, setContent) {
-  const streamParam = 'stream=true';
-  const promptParam = `prompt=${encodeURIComponent(prompt)}`;
-  const nonceParam = `_wpnonce=${andika.api_nonce}`;
-  const url = `${andika.rest_url}andika/v1/andika-ai?${promptParam}&${streamParam}&${nonceParam}`;
+  const andikaAPI = new Andika_OpenAI_API(andika);
+
+  // Callback function for the streaming events
+  const andikaStreamEvents = (event) => {
+    if (event.type === 'event') {
+      if (event.data !== "[DONE]") {        
+      try {
+        const parsedData = JSON.parse(event.data);
+        const choices = parsedData.choices || [];
+        const json = choices[0]?.text ?? choices[0]?.message?.content ?? choices[0]?.delta?.content ?? '';
+        setContent((prevContent) => prevContent + json);
+      } catch (e) {
+        console.error('Error parsing JSON', e);
+      }
+    }
+    }
+  };
 
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Error fetching text from WordPress REST API: ${response.status}`);
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    const parser = createParser(async (event) => {
-      if (event.type === 'event') {
-        const data = event.data;
-        try {
-          const json = JSON.parse(data);
-          const char = json.char;
-          setContent((prevContent) => prevContent + char);
-        } catch (e) {
-          console.error('Error parsing JSON:', e);
-        }
-      }
-    });
-    
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      const decodedChunk = decoder.decode(value);
-      parser.feed(decodedChunk);
-    }
+    await andikaAPI.andika_text(prompt, andikaStreamEvents);
   } catch (error) {
-    console.error('Error in generateText:', error);
+    console.error('Error in generateText', error);
   }
 }
+
+
+

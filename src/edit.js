@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-import { store as blockEditorStore } from '@wordpress/block-editor';
+import { useBlockProps, store as blockEditorStore } from '@wordpress/block-editor';
 import { Fragment, useState, useCallback, useEffect, useRef} from '@wordpress/element';
 import { RichText } from '@wordpress/block-editor';
 
@@ -13,8 +13,9 @@ import AndikaInspectorControls from './components/inspectorcontrols';
 export default function Edit({ attributes, setAttributes, isSelected, clientId }) {
     const [isLoading, setIsLoading] = useState(false);
     const [content, setContent] = useState(attributes.content || '');
-    const { onSplit, onMerge, onReplace } = AndikaBlockHandler(attributes, content, setAttributes, setContent);
+    const { onSplit, onMerge, onReplace, onInsertAfter } = AndikaBlockHandler(attributes, content, setAttributes, setContent);
     const RichTextRef = useRef();
+    const blockProps = useBlockProps();
   
     const postTitle = useSelect((select) =>
       select('core/editor').getEditedPostAttribute('title')
@@ -65,17 +66,17 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
       const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     
       try {
-        await generateText(prompt, content, setContent);
+        await generateText(prompt, content, setContent)
       } catch (error) {
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     
-    }, [content, postTitle, previousContent]);         
+    }, [content, postTitle, previousContent]);                   
   
     return (
-      <Fragment>
+      <Fragment>   
         <AndikaBlockControls
           attributes={attributes}
           setAttributes={setAttributes}
@@ -109,7 +110,7 @@ export default function Edit({ attributes, setAttributes, isSelected, clientId }
           onReplace={(blocks) => onReplace(blocks, clientId)}
           onRemove={() => onReplace([])}
           onMerge={() => onMerge(clientId)}
-        />
+        />      
       </Fragment>
     );
   }

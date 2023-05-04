@@ -22,6 +22,10 @@
       "source": "html",
       "selector": "p"
     },
+    "element": {
+      "type": "string",
+      "default": "p"
+    },
     "alignment": {
       "type": "string",
       "default": "none"

@@ -14,10 +14,8 @@ class Andika {
     }
 
     private function andika_dependencies() {
-        require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-rest.php';
         require_once ANDIKA_PLUGIN_DIR . 'inc/admin/andika-settings.php';
         require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-block.php';
-        require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika-api.php';
     }
 
     /**
@@ -34,10 +32,6 @@ class Andika {
         // Block editor custom block.
         $block = new Andika_Block();
         add_action('enqueue_block_editor_assets', array($block, 'enqueue_block_editor_assets'));
-
-        // Register REST API endpoint.
-        $andika_rest = new Andika_REST();
-        add_action('rest_api_init', array($andika_rest, 'register_routes'));
     }
 
     public function run() {

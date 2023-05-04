@@ -2,8 +2,8 @@ import { createBlock } from '@wordpress/blocks';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 
-export const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
-  const { replaceBlocks, removeBlock } = useDispatch(blockEditorStore);
+export const AndikaBlockHandler = (attributes, content, setAttributes, setContent, clientId) => {
+  const { insertBlocks, replaceBlocks, removeBlock } = useDispatch(blockEditorStore);
   const {
     getBlock,   
     getBlockOrder,
@@ -76,8 +76,14 @@ export const AndikaBlockHandler = (attributes, content, setAttributes, setConten
         removeBlock(nextBlockClientId);
       }
     }
-  };  
+  };
+  
+  const onInsertAfter = (block) => {
+    const blockIndex = getBlockIndex(clientId);
+    const nextBlockIndex = blockIndex + 1;
+    insertBlocks(block, nextBlockIndex);
+  };
  
-  return { onSplit, onReplace, onMerge };
+  return { onSplit, onReplace, onMerge, onInsertAfter };
 };
 export default AndikaBlockHandler;

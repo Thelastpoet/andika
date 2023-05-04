@@ -21,8 +21,7 @@ class Andika_Block {
             'andika-block-editor',
             'andika',
             array(
-                'api_nonce' => wp_create_nonce('wp_rest'),
-                'rest_url' => rest_url(),
+				'api_key' => get_option('andika_openai_api_key'),
 				'model' => get_option('andika_model', 'text-davinci-003'),
 				'temperature' => (float) get_option('andika_temperature', 0.7),
 				'maxTokens' => (int) get_option('andika_max_tokens', 100),

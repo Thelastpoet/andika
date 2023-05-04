@@ -40,6 +40,7 @@ function AndikaBlockControls(props) {
     icon: isLoading ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Spinner, null) : 'lightbulb',
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Generate Text', 'andika'),
     onClick: onGenerateClick,
+    isPressed: isLoading,
     disabled: isLoading
   })));
 }
@@ -68,8 +69,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
+const AndikaBlockHandler = (attributes, content, setAttributes, setContent, clientId) => {
   const {
+    insertBlocks,
     replaceBlocks,
     removeBlock
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.store);
@@ -135,10 +137,16 @@ const AndikaBlockHandler = (attributes, content, setAttributes, setContent) => {
       }
     }
   };
+  const onInsertAfter = block => {
+    const blockIndex = getBlockIndex(clientId);
+    const nextBlockIndex = blockIndex + 1;
+    insertBlocks(block, nextBlockIndex);
+  };
   return {
     onSplit,
     onReplace,
-    onMerge
+    onMerge,
+    onInsertAfter
   };
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AndikaBlockHandler);
@@ -261,9 +269,11 @@ function Edit(_ref) {
   const {
     onSplit,
     onMerge,
-    onReplace
+    onReplace,
+    onInsertAfter
   } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, content, setAttributes, setContent);
   const RichTextRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)();
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)();
   const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
   const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
   const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
@@ -466,51 +476,126 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var eventsource_parser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eventsource-parser */ "./node_modules/eventsource-parser/dist/index.js");
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
-/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__);
-
+/* harmony import */ var _andika_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./andika-api */ "./src/utils/andika-api.js");
 
 
 async function generateText(prompt, content, setContent) {
-  const streamParam = 'stream=true';
-  const promptParam = `prompt=${encodeURIComponent(prompt)}`;
-  const nonceParam = `_wpnonce=${andika.api_nonce}`;
-  const url = `${andika.rest_url}andika/v1/andika-ai?${promptParam}&${streamParam}&${nonceParam}`;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Error fetching text from WordPress REST API: ${response.status}`);
-    }
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    const parser = (0,eventsource_parser__WEBPACK_IMPORTED_MODULE_2__.createParser)(async event => {
-      if (event.type === 'event') {
-        const data = event.data;
+  const andikaAPI = new _andika_api__WEBPACK_IMPORTED_MODULE_1__["default"](andika);
+
+  // Callback function for the streaming events
+  const andikaStreamEvents = event => {
+    if (event.type === 'event') {
+      if (event.data !== "[DONE]") {
         try {
-          const json = JSON.parse(data);
-          const char = json.char;
-          setContent(prevContent => prevContent + char);
+          var _ref, _ref2, _choices$0$text;
+          const parsedData = JSON.parse(event.data);
+          const choices = parsedData.choices || [];
+          const json = (_ref = (_ref2 = (_choices$0$text = choices[0]?.text) !== null && _choices$0$text !== void 0 ? _choices$0$text : choices[0]?.message?.content) !== null && _ref2 !== void 0 ? _ref2 : choices[0]?.delta?.content) !== null && _ref !== void 0 ? _ref : '';
+          setContent(prevContent => prevContent + json);
         } catch (e) {
-          console.error('Error parsing JSON:', e);
+          console.error('Error parsing JSON', e);
         }
       }
-    });
-    while (true) {
-      const {
-        done,
-        value
-      } = await reader.read();
-      if (done) {
-        break;
-      }
-      const decodedChunk = decoder.decode(value);
-      parser.feed(decodedChunk);
     }
+  };
+  try {
+    await andikaAPI.andika_text(prompt, andikaStreamEvents);
   } catch (error) {
-    console.error('Error in generateText:', error);
+    console.error('Error in generateText', error);
   }
 }
+
+/***/ }),
+
+/***/ "./src/utils/andika-api.js":
+/*!*********************************!*\
+  !*** ./src/utils/andika-api.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var eventsource_parser__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! eventsource-parser */ "./node_modules/eventsource-parser/dist/index.js");
+
+const API_BASE_URL = 'https://api.openai.com/v1/';
+class Andika_OpenAI_API {
+  constructor(options) {
+    this.api_key = options.api_key;
+    this.model = options.model;
+    this.temperature = parseFloat(options.temperature);
+    this.max_tokens = parseInt(options.maxTokens, 10);
+    this.top_p = parseFloat(options.topP);
+    this.frequency_penalty = parseFloat(options.frequencyPenalty);
+    this.presence_penalty = parseFloat(options.presencePenalty);
+    this.stream = options.stream === "1" ? true : false;
+  }
+  get_api_url() {
+    if (this.model === 'gpt-3.5-turbo' || this.model === 'gpt-4') {
+      return `${API_BASE_URL}chat/completions`;
+    } else {
+      return `${API_BASE_URL}completions`;
+    }
+  }
+  async andika_text(prompt, callback) {
+    let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    const url = this.get_api_url();
+    const body = {
+      model: this.model,
+      temperature: this.temperature,
+      max_tokens: this.max_tokens,
+      top_p: this.top_p,
+      frequency_penalty: this.frequency_penalty,
+      presence_penalty: this.presence_penalty,
+      stream: this.stream,
+      n: 1,
+      ...options
+    };
+    if (this.model === 'gpt-3.5-turbo' || this.model === 'gpt-4') {
+      body.messages = [{
+        role: 'user',
+        content: prompt
+      }];
+    } else {
+      body.prompt = prompt;
+    }
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.api_key}`
+      },
+      body: JSON.stringify(body)
+    };
+    try {
+      const response = await fetch(url, requestOptions);
+      if (!response.ok) {
+        // Log the error response
+        const errorData = await response.json();
+        console.error('Error response from OpenAI API:', errorData);
+        throw new Error(response.statusText);
+      }
+      const parser = (0,eventsource_parser__WEBPACK_IMPORTED_MODULE_0__.createParser)(callback);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const {
+          done,
+          value
+        } = await reader.read();
+        if (done) {
+          break;
+        }
+        parser.feed(decoder.decode(value));
+      }
+    } catch (error) {
+      console.error('Error generating text:', error);
+      return 'Error generating text! Check your API Key?';
+    }
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Andika_OpenAI_API);
 
 /***/ }),
 
@@ -728,7 +813,7 @@ function hasBom(buffer) {
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","author":"Ammanulah Emmanuel","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"alignment":{"type":"string","default":"none"},"backgroundColor":{"type":"string"},"textColor":{"type":"string"},"fontSize":{"type":"string"},"lineHeight":{"type":"number","default":1.5}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"typography":{"fontSize":true,"lineHeight":true},"className":false}}');
+module.exports = JSON.parse('{"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","author":"Ammanulah Emmanuel","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"element":{"type":"string","default":"p"},"alignment":{"type":"string","default":"none"},"backgroundColor":{"type":"string"},"textColor":{"type":"string"},"fontSize":{"type":"string"},"lineHeight":{"type":"number","default":1.5}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"typography":{"fontSize":true,"lineHeight":true},"className":false}}');
 
 /***/ })
 
@@ -828,12 +913,12 @@ __webpack_require__.r(__webpack_exports__);
   icon: _block_json__WEBPACK_IMPORTED_MODULE_5__.icon,
   category: _block_json__WEBPACK_IMPORTED_MODULE_5__.category,
   description: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)(_block_json__WEBPACK_IMPORTED_MODULE_5__.description),
+  transforms: _transforms__WEBPACK_IMPORTED_MODULE_6__["default"],
   supports: {
     html: true,
     className: false
   },
   attributes: _block_json__WEBPACK_IMPORTED_MODULE_5__.attributes,
-  transforms: _transforms__WEBPACK_IMPORTED_MODULE_6__["default"],
   edit: _edit__WEBPACK_IMPORTED_MODULE_3__["default"],
   save: _save__WEBPACK_IMPORTED_MODULE_4__["default"]
 });

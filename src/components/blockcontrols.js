@@ -21,6 +21,7 @@ function AndikaBlockControls( props ) {
                     icon={isLoading ? <Spinner /> : 'lightbulb'}
                     label={__('Generate Text', 'andika')}
                     onClick={onGenerateClick}
+                    isPressed={isLoading}
                     disabled={isLoading}
                 />
             </ToolbarGroup>

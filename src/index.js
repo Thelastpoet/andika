@@ -12,12 +12,12 @@ registerBlockType(metadata.name, {
 	icon: metadata.icon,
 	category: metadata.category,
 	description: __(metadata.description),
+	transforms,
 	supports: {
 		html: true,
 		className: false,
 	},
-	attributes: metadata.attributes,
-	transforms,
+	attributes: metadata.attributes,	
 	edit: Edit,
 	save: Save,
 	
