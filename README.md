@@ -52,8 +52,4 @@ To Contribute:
 Have any questions, doubts or want to present your opinions, views? You're always welcome. You can [start discussions](https://github.com/Thelastpoet/andika/discussions).
 
 ## Long-term vision
-<<<<<<< HEAD
 Andika the leading Open Source WordPress writing plugin that uses AI.
-=======
-Andika the leading Open Source WordPress writing plugin that uses AI.
->>>>>>> 47e3b7bd25b2728d1c964b23c99afaff0133d4fc
