@@ -30,26 +30,3 @@ Andika is under active development but works.
 Manuel is licensed under the GPL-2.0+ License. See the [LICENSE](http://www.gnu.org/licenses/gpl-2.0.txt) file for more information.
 
 ## Contributing
-
-Anyone is free to contribute to Andika and we welcome all contributors from the WordPress Community.
-
-To Contribute:
-
-1. Ensure you have the latest WordPress version on your site or development environment
-```sh
-2. Clone or download Andika. https://github.com/Thelastpoet/andika.git
-```
-3. Andika uses Node.js for the JS development so make sure you have that.
-4. We are not using any third party dependencies but its good to npm install
-5. To compile the code, run any of the following commands
-    - npm run build (Production build).
-    - npm run dev (Development build).
-    - npm start ( Development build and watching changes as you build)
-6. Activate the plugin.
-
-## Discussions
-
-Have any questions, doubts or want to present your opinions, views? You're always welcome. You can [start discussions](https://github.com/Thelastpoet/andika/discussions).
-
-## Long-term vision
-Andika the leading Open Source WordPress writing plugin that uses AI.
