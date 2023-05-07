@@ -137,16 +137,10 @@ const AndikaBlockHandler = (attributes, content, setAttributes, setContent, clie
       }
     }
   };
-  const onInsertAfter = block => {
-    const blockIndex = getBlockIndex(clientId);
-    const nextBlockIndex = blockIndex + 1;
-    insertBlocks(block, nextBlockIndex);
-  };
   return {
     onSplit,
     onReplace,
-    onMerge,
-    onInsertAfter
+    onMerge
   };
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AndikaBlockHandler);
@@ -264,16 +258,25 @@ function Edit(_ref) {
     isSelected,
     clientId
   } = _ref;
+  const {
+    content: contentAttr,
+    alignment,
+    fontSize,
+    textColor,
+    backgroundColor
+  } = attributes;
   const [isLoading, setIsLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const [content, setContent] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(attributes.content || '');
+  const [content, setContent] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(contentAttr || '');
   const {
     onSplit,
     onMerge,
-    onReplace,
-    onInsertAfter
-  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, content, setAttributes, setContent);
+    onReplace
+  } = (0,_components_blockhandler__WEBPACK_IMPORTED_MODULE_5__["default"])(attributes, content, setAttributes, setContent, clientId);
   const RichTextRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)();
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)();
+  const {
+    insertBlocks
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store);
   const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
   const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
   const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
@@ -298,18 +301,21 @@ function Edit(_ref) {
   };
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     setCaretPosition(RichTextRef);
-  }, [content]);
+    setAttributes({
+      content
+    });
+  }, [content, setAttributes]);
   const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
     setIsLoading(true);
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
     try {
-      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent);
+      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, insertBlocks, clientId);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
-  }, [content, postTitle, previousContent]);
+  }, [content, postTitle, previousContent, setContent, insertBlocks]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -320,9 +326,10 @@ function Edit(_ref) {
     setAttributes: setAttributes
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.RichText, {
     ref: RichTextRef,
-    tagName: "p",
+    tagName: "div",
     value: content,
     onChange: newContent => {
+      setContent(newContent);
       setAttributes({
         content: newContent
       });
@@ -331,10 +338,10 @@ function Edit(_ref) {
     placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Type and click the lightbulb icon to generate text...', 'andika'),
     isSelected: isSelected,
     style: {
-      textAlign: attributes.alignment,
-      fontSize: attributes.fontSize,
-      color: attributes.textColor,
-      backgroundColor: attributes.backgroundColor
+      textAlign: alignment,
+      fontSize: fontSize,
+      color: textColor,
+      backgroundColor: backgroundColor
     },
     onSplit: onSplit,
     onReplace: blocks => onReplace(blocks, clientId),
@@ -474,24 +481,39 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "generateText": () => (/* binding */ generateText)
 /* harmony export */ });
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
+/* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _andika_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./andika-api */ "./src/utils/andika-api.js");
 
 
-async function generateText(prompt, content, setContent) {
+async function generateText(prompt, content, setContent, insertBlocks, clientId) {
   const andikaAPI = new _andika_api__WEBPACK_IMPORTED_MODULE_1__["default"](andika);
-
-  // Callback function for the streaming events
-  const andikaStreamEvents = event => {
+  let accumulatedText = '';
+  const andikaStreamEvents = async event => {
     if (event.type === 'event') {
       if (event.data !== "[DONE]") {
         try {
-          var _ref, _ref2, _choices$0$text;
+          var _ref, _ref2, _parsedData$choices$;
           const parsedData = JSON.parse(event.data);
-          const choices = parsedData.choices || [];
-          const json = (_ref = (_ref2 = (_choices$0$text = choices[0]?.text) !== null && _choices$0$text !== void 0 ? _choices$0$text : choices[0]?.message?.content) !== null && _ref2 !== void 0 ? _ref2 : choices[0]?.delta?.content) !== null && _ref !== void 0 ? _ref : '';
-          setContent(prevContent => prevContent + json);
+          const text = (_ref = (_ref2 = (_parsedData$choices$ = parsedData.choices[0]?.text) !== null && _parsedData$choices$ !== void 0 ? _parsedData$choices$ : parsedData.choices[0]?.message?.content) !== null && _ref2 !== void 0 ? _ref2 : parsedData.choices[0]?.delta?.content) !== null && _ref !== void 0 ? _ref : '';
+          const cleanedText = text.replace(/^\n{1,2}/, '');
+          if (cleanedText) {
+            accumulatedText += cleanedText;
+            if (accumulatedText.includes('\n')) {
+              const paragraphs = accumulatedText.split(/\n+/);
+
+              // Filter out empty paragraphs
+              const nEP = paragraphs.filter(paragraph => paragraph.trim() !== '');
+              const blocksToInsert = nEP.map(paragraph => (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
+                content: paragraph
+              }));
+              const currentIndex = wp.data.select('core/block-editor').getBlockIndex(clientId);
+              insertBlocks(blocksToInsert, currentIndex);
+              accumulatedText = '';
+            } else {
+              setContent(accumulatedText);
+            }
+          }
         } catch (e) {
           console.error('Error parsing JSON', e);
         }
@@ -499,7 +521,7 @@ async function generateText(prompt, content, setContent) {
     }
   };
   try {
-    await andikaAPI.andika_text(prompt, andikaStreamEvents);
+    await andikaAPI.andikaText(prompt, andikaStreamEvents);
   } catch (error) {
     console.error('Error in generateText', error);
   }
@@ -520,9 +542,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var eventsource_parser__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! eventsource-parser */ "./node_modules/eventsource-parser/dist/index.js");
 
 const API_BASE_URL = 'https://api.openai.com/v1/';
-class Andika_OpenAI_API {
+class AndikaOpenAI {
   constructor(options) {
-    this.api_key = options.api_key;
+    this.apiKey = options.api_key;
     this.model = options.model;
     this.temperature = parseFloat(options.temperature);
     this.max_tokens = parseInt(options.maxTokens, 10);
@@ -538,7 +560,7 @@ class Andika_OpenAI_API {
       return `${API_BASE_URL}completions`;
     }
   }
-  async andika_text(prompt, callback) {
+  async andikaText(prompt, callback) {
     let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const url = this.get_api_url();
     const body = {
@@ -564,7 +586,7 @@ class Andika_OpenAI_API {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.api_key}`
+        'Authorization': `Bearer ${this.apiKey}`
       },
       body: JSON.stringify(body)
     };
@@ -595,7 +617,7 @@ class Andika_OpenAI_API {
     }
   }
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Andika_OpenAI_API);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AndikaOpenAI);
 
 /***/ }),
 

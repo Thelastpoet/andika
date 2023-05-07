@@ -77,13 +77,7 @@ export const AndikaBlockHandler = (attributes, content, setAttributes, setConten
       }
     }
   };
-  
-  const onInsertAfter = (block) => {
-    const blockIndex = getBlockIndex(clientId);
-    const nextBlockIndex = blockIndex + 1;
-    insertBlocks(block, nextBlockIndex);
-  };
  
-  return { onSplit, onReplace, onMerge, onInsertAfter };
+  return { onSplit, onReplace, onMerge };
 };
 export default AndikaBlockHandler;

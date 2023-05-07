@@ -2,9 +2,9 @@ import { createParser } from "eventsource-parser";
 
 const API_BASE_URL = 'https://api.openai.com/v1/';
 
-class Andika_OpenAI_API {
+class AndikaOpenAI {
   constructor(options) {
-    this.api_key = options.api_key;
+    this.apiKey = options.api_key;
     this.model = options.model;
     this.temperature = parseFloat(options.temperature);
     this.max_tokens = parseInt(options.maxTokens, 10);
@@ -22,7 +22,7 @@ class Andika_OpenAI_API {
     }
   }
 
-  async andika_text(prompt, callback, options = {}) {
+  async andikaText(prompt, callback, options = {}) {
     const url = this.get_api_url();
 
     const body = {
@@ -47,7 +47,7 @@ class Andika_OpenAI_API {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.api_key}`,
+        'Authorization': `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify(body),
     };
@@ -79,4 +79,4 @@ class Andika_OpenAI_API {
   }
 }
 
-export default Andika_OpenAI_API;
+export default AndikaOpenAI;
