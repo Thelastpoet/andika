@@ -29,6 +29,7 @@ export default function Edit({
   const RichTextRef = useRef();
   const blockProps = useBlockProps();
   const { insertBlocks } = useDispatch(blockEditorStore);
+  const { createNotice } = useDispatch('core/notices');
 
   const postTitle = useSelect((select) =>
     select('core/editor').getEditedPostAttribute('title')
@@ -82,11 +83,11 @@ export default function Edit({
     try {
       await generateText(prompt, content, setContent, insertBlocks, clientId);
     } catch (error) {
-      console.error(error);
+      createNotice('error', `Text generation failed: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [content, postTitle, previousContent, setContent, insertBlocks]);
+  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId]);
 
   return (
     <Fragment>

@@ -183,6 +183,24 @@ const AndikaInspectorControls = _ref => {
     });
   };
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Andika Controls', 'andika')
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Text Length', 'andika'),
+    value: attributes.andikaTextLength,
+    options: [{
+      label: 'Short',
+      value: 'short'
+    }, {
+      label: 'Medium',
+      value: 'medium'
+    }, {
+      label: 'Long',
+      value: 'long'
+    }],
+    onChange: value => setAttributes({
+      andikaTextLength: value
+    })
+  })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Typography', 'andika')
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.FontSizePicker, {
     value: attributes.fontSize,
@@ -277,6 +295,9 @@ function Edit(_ref) {
   const {
     insertBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store);
+  const {
+    createNotice
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)('core/notices');
   const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
   const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
   const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
@@ -311,11 +332,11 @@ function Edit(_ref) {
     try {
       await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, insertBlocks, clientId);
     } catch (error) {
-      console.error(error);
+      createNotice('error', `Text generation failed: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [content, postTitle, previousContent, setContent, insertBlocks]);
+  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -486,44 +507,85 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _andika_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./andika-api */ "./src/utils/andika-api.js");
 
 
-async function generateText(prompt, content, setContent, insertBlocks, clientId) {
+
+// Generates text using the Andika API and inserts it as blocks in the WordPress editor
+async function generateText(prompt, content, setContent, insertBlocks, clientId, andikaTextLength) {
   const andikaAPI = new _andika_api__WEBPACK_IMPORTED_MODULE_1__["default"](andika);
-  let accumulatedText = '';
+
+  // Buffer to accumulate the generated text
+  let buffer = '';
+
+  // Handles the streaming events returned by the OpenAI API
   const andikaStreamEvents = async event => {
     if (event.type === 'event') {
       if (event.data !== "[DONE]") {
         try {
           var _ref, _ref2, _parsedData$choices$;
           const parsedData = JSON.parse(event.data);
+
+          // Extract the text from the parsed data
           const text = (_ref = (_ref2 = (_parsedData$choices$ = parsedData.choices[0]?.text) !== null && _parsedData$choices$ !== void 0 ? _parsedData$choices$ : parsedData.choices[0]?.message?.content) !== null && _ref2 !== void 0 ? _ref2 : parsedData.choices[0]?.delta?.content) !== null && _ref !== void 0 ? _ref : '';
-          const cleanedText = text.replace(/^\n{1,2}/, '');
-          if (cleanedText) {
-            accumulatedText += cleanedText;
-            if (accumulatedText.includes('\n')) {
-              const paragraphs = accumulatedText.split(/\n+/);
+
+          // Remove leading newline characters
+          const sanitizedText = text.replace(/^\n{1,2}/, '');
+          if (sanitizedText) {
+            buffer += sanitizedText;
+
+            // If the buffer contains newline characters, split and insert the paragraphs as blocks
+            if (buffer.includes('\n')) {
+              const paragraphs = buffer.split(/\n+/);
 
               // Filter out empty paragraphs
-              const nEP = paragraphs.filter(paragraph => paragraph.trim() !== '');
-              const blocksToInsert = nEP.map(paragraph => (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
+              const validParagraphs = paragraphs.filter(paragraph => paragraph.trim() !== '');
+
+              // Create blocks from paragraphs
+              const blocks = validParagraphs.map(paragraph => (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
                 content: paragraph
               }));
-              const currentIndex = wp.data.select('core/block-editor').getBlockIndex(clientId);
-              insertBlocks(blocksToInsert, currentIndex);
-              accumulatedText = '';
+
+              // Save the index of the current block
+              const index = wp.data.select('core/block-editor').getBlockIndex(clientId);
+
+              // Insert new blocks after the current block
+              insertBlocks(blocks, index);
+
+              // Clear the buffer
+              buffer = '';
             } else {
-              setContent(accumulatedText);
+              // Update the content of the current block
+              setContent(content + buffer);
             }
           }
         } catch (e) {
-          console.error('Error parsing JSON', e);
+          throw new Error('Error parsing JSON: ' + e.message);
         }
       }
     }
   };
+
+  // Set the maximum number of tokens to generate based on the specified text length
+  let maxTokens;
+  switch (andikaTextLength) {
+    case 'short':
+      maxTokens = 32;
+      break;
+    case 'medium':
+      maxTokens = 64;
+      break;
+    case 'long':
+      maxTokens = 128;
+      break;
+    default:
+      maxTokens = 64;
+  }
+
+  // Call the Andika API to generate text and handle the streaming events
   try {
-    await andikaAPI.andikaText(prompt, andikaStreamEvents);
+    await andikaAPI.andikaText(prompt, andikaStreamEvents, {
+      max_tokens: maxTokens
+    });
   } catch (error) {
-    console.error('Error in generateText', error);
+    throw new Error('Error in generateText: ' + error.message);
   }
 }
 
@@ -547,7 +609,6 @@ class AndikaOpenAI {
     this.apiKey = options.api_key;
     this.model = options.model;
     this.temperature = parseFloat(options.temperature);
-    this.max_tokens = parseInt(options.maxTokens, 10);
     this.top_p = parseFloat(options.topP);
     this.frequency_penalty = parseFloat(options.frequencyPenalty);
     this.presence_penalty = parseFloat(options.presencePenalty);
@@ -566,12 +627,12 @@ class AndikaOpenAI {
     const body = {
       model: this.model,
       temperature: this.temperature,
-      max_tokens: this.max_tokens,
       top_p: this.top_p,
       frequency_penalty: this.frequency_penalty,
       presence_penalty: this.presence_penalty,
       stream: this.stream,
       n: 1,
+      max_tokens: options.max_tokens,
       ...options
     };
     if (this.model === 'gpt-3.5-turbo' || this.model === 'gpt-4') {
@@ -835,7 +896,7 @@ function hasBom(buffer) {
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","author":"Ammanulah Emmanuel","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"element":{"type":"string","default":"p"},"alignment":{"type":"string","default":"none"},"backgroundColor":{"type":"string"},"textColor":{"type":"string"},"fontSize":{"type":"string"},"lineHeight":{"type":"number","default":1.5}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"typography":{"fontSize":true,"lineHeight":true},"className":false}}');
+module.exports = JSON.parse('{"name":"andika-block/andika","version":"0.1.0","title":"Andika","category":"text","icon":"lightbulb","description":"Elevate your writing with real-time AI text generation using Andika.","author":"Ammanulah Emmanuel","keywords":["andika","openai","real-time","ai","text"],"textdomain":"andika","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","attributes":{"content":{"type":"string","source":"html","selector":"p"},"element":{"type":"string","default":"p"},"alignment":{"type":"string","default":"none"},"backgroundColor":{"type":"string"},"textColor":{"type":"string"},"fontSize":{"type":"string"},"lineHeight":{"type":"number","default":1.5},"andikaTextLength":{"type":"string","default":"medium"}},"supports":{"color":{"text":true,"background":true,"gradients":true,"link":true},"typography":{"fontSize":true,"lineHeight":true},"className":false}}');
 
 /***/ })
 

@@ -4,7 +4,7 @@ import {
     PanelColorSettings,
     FontSizePicker,
 } from '@wordpress/block-editor';
-import { PanelBody, RangeControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 
 const AndikaInspectorControls = ({
     attributes,
@@ -18,7 +18,19 @@ const AndikaInspectorControls = ({
 
     return (
         <InspectorControls>
-            <PanelBody title={__('Typography', 'andika')}>
+            <PanelBody title={__('Andika Controls', 'andika')}>
+                <SelectControl
+                    label={__('Text Length', 'andika')}
+                    value={attributes.andikaTextLength}
+                    options={[
+                        { label: 'Short', value: 'short' },
+                        { label: 'Medium', value: 'medium' },
+                        { label: 'Long', value: 'long' },
+                    ]}
+                    onChange={(value) => setAttributes({ andikaTextLength: value })}
+                />
+            </PanelBody>
+            <PanelBody title={__('Typography', 'andika')}>           
                 <FontSizePicker
                     value={attributes.fontSize}
                     onChange={(value) => setAttributes({ fontSize: value })}

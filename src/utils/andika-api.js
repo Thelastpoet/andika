@@ -7,7 +7,6 @@ class AndikaOpenAI {
     this.apiKey = options.api_key;
     this.model = options.model;
     this.temperature = parseFloat(options.temperature);
-    this.max_tokens = parseInt(options.maxTokens, 10);
     this.top_p = parseFloat(options.topP);
     this.frequency_penalty = parseFloat(options.frequencyPenalty);
     this.presence_penalty = parseFloat(options.presencePenalty);
@@ -28,12 +27,12 @@ class AndikaOpenAI {
     const body = {
       model: this.model,
       temperature: this.temperature,
-      max_tokens: this.max_tokens,
       top_p: this.top_p,
       frequency_penalty: this.frequency_penalty,
       presence_penalty: this.presence_penalty,
       stream: this.stream,
       n: 1,
+      max_tokens: options.max_tokens,
       ...options,
     };
 

@@ -43,6 +43,10 @@
     "lineHeight": {
       "type": "number",
       "default": 1.5
+    },
+    "andikaTextLength": {
+      "type": "string",
+      "default": "medium"
     }
   },
   "supports": {
