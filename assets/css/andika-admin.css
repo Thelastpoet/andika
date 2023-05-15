@@ -1,67 +1,124 @@
-/* Andika Admin CSS */
-
-.andika-tabs-container {
-    position: relative;
+.wrap.andika-wrap {
+    max-width: 960px;
+    margin: 50px 0 0 20px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    border-radius: 10px;
+}
+   
+.wrap.andika-wrap .andika-header {
+    border-bottom: 2px solid #3f51b5;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+   
+.wrap.andika-wrap .andika-header h1 {
+    font-size: 1.8rem;
+    color: #000;
+}
+   
+.wrap.andika-wrap .nav-tab-wrapper {
+    display: flex;
+    justify-content: start;
+    border-bottom: 1px solid #ddd;
 }
 
-.andika-wrap .nav-tab-wrapper {
-    float: left;
-    width: 150px;    
-    border: 0;
-    margin-left: 20px !important;
-}
-
-.andika-wrap .nav-tab-wrapper a {
-    width: 100%;
-    float: right;
-    clear: right;
-    position: relative;
-    z-index: 3;
-}
-
-.andika-wrap .nav-tab {
-    border-bottom: none;
-    margin-left: .5em;
-    padding: 8px 10px;
-    color: #555;
+.wrap.andika-wrap .nav-tab-wrapper .nav-tab {
+    color: #333;
     text-decoration: none;
-    border-right: 1px solid #ccc;
-    width: 150px;
-    white-space: nowrap;
+    padding: 10px;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+    border-radius: 5px 5px 0 0;
+    transition: background-color 0.3s ease-in-out;
 }
 
-.andika-wrap .nav-tab:hover {
-    color: #000;
-    background-color: #e5e5e5;
+.wrap.andika-wrap .nav-tab-wrapper .nav-tab:hover,
+.wrap.andika-wrap .nav-tab-wrapper .nav-tab.active {
+    color: #fff;
+    background-color: #3f51b5;
+    border-bottom: 1px solid transparent;
 }
 
-.andika-wrap .nav-tab-active {
-    color: #000;
-    background-color: #fff;
-    border-left: 1px solid #ccc;
+.wrap.andika-wrap .andika-settings-tab {
+    display: none;
+    padding: 20px;
+    border-radius: 5px;
 }
-
-.andika-settings-content {
-    position: relative;
-    float: left;
-    left: -1px;
-    padding-left: 20px;
-    width: calc(100% - 190px);
-    overflow: hidden;
-}
-.andika-settings-content::before {
-    content: '';
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
+   
+.wrap.andika-wrap .andika-settings-tab.active {
     display: block;
-    width: 1px;
-    height: 3000px; 
-    border-left: 1px solid #ccc;
+}
+   
+.wrap.andika-wrap .andika-settings-tab h2 {
+    font-size: 1.6rem;
+    color: #333;
+}
+   
+.wrap.andika-wrap form {
+    margin-top: 20px;
+}
+   
+.wrap.andika-wrap form input[type="submit"] {
+    background-color: #0073aa;
+    color: #ffffff;
+    border-radius: 5px; 
+    cursor:pointer; 
+    transition-duration:.2s; 
+    transition-timing-function:cubic-bezier(.4,0,.2,1); 
+    transition-property:border-color,background-color,color; 
+    box-shadow:none; 
+    border:none; 
+    padding:.375rem .75rem; 
+    font-size:.875rem; 
+    line-height:normal; 
+    text-align:center; 
+    white-space:normal; 
+    vertical-align:center; 
+    user-select:none; 
+    -webkit-appearance:none; 
+    -moz-appearance:none; 
+    appearance:none
+}
+   
+.wrap.andika-wrap form input[type="submit"]:hover {
+    background-color:#283593
+}
+   
+/* Style text and select fields */
+.wrap.andika-wrap form input[type="text"], 
+.wrap.andika-wrap form input[type="number"], 
+.wrap.andika-wrap form select {
+    background-color:#fff; 
+    color:#333; 
+    border-radius:.25rem; 
+    box-shadow:none; 
+    border:solid thin rgba(0,0,0,.12); 
+    width:50%; 
+    height:auto; 
+    box-sizing:border-box
+}
+   
+/* Add hover effect for text and select fields */
+.wrap.andika-wrap form input[type="text"]:hover, 
+.wrap.andika-wrap form select:hover {
+    border-color:#0073aa
+}  
+
+/* Documentation Tab */
+.help-section p {
+    font-size: 15px;
+    line-height: 1.6;
 }
 
-/* Help Tab settings */
+/* Documentation Tab */
+.bob-general p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Help Tab CSS */
 .help-section {
     background-color: #fff;
     border: 1px solid #ccc;

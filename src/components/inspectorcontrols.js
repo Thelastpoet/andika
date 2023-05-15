@@ -60,7 +60,17 @@ const AndikaInspectorControls = ({
                         label: __('Background color', 'andika'),
                     }
                 ]}
-            />
+            >
+                <ContrastChecker
+                    { ...{
+                        textColor: attributes.textColor,
+                        backgroundColor: attributes.backgroundColor,
+                        fallbackTextColor,
+                        fallbackBackgroundColor,
+                    }}
+                    fontSize={attributes.fontSize}
+                />
+            </PanelColorSettings>
 
         </InspectorControls>
     );

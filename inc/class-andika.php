@@ -22,10 +22,9 @@ class Andika {
 	 * Load required dependencies.
 	 */
     private function andika_hooks() {
-        // Admin settings page.
         $settings = new Andika_Settings();
         add_action('admin_menu', array($settings, 'register_settings_page'));
-        add_action('admin_init', array($settings, 'register_settings'));
+        add_action('admin_init', array($settings, 'register_fields'));
         
         add_action('admin_enqueue_scripts', array($settings, 'enqueue_admin_assets'));
 

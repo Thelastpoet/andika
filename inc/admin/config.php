@@ -1,0 +1,107 @@
+<?php
+// config.php
+
+return [
+    'id' => 'andika-settings',
+    'page_title' => 'Andika Settings',
+    'menu_title' => 'Andika',
+    'parent_menu' => '',
+    'fields' => [
+        [
+            'type' => 'section',
+            'name' => 'section1',
+            'title' => 'Section 1'
+        ],
+        [
+            'type' => 'text',
+            'name' => 'andika_openai_api_key',
+            'title' => 'OpenAI API Key',
+            'section' => 'section1',
+        ],
+        [
+            'type' => 'select',
+            'name' => 'andika_model',
+            'title' => 'Model',
+            'section' => 'section1',
+            'options' => [
+                'gpt-4' => 'GPT-4',
+                'gpt-3.5-turbo' => 'GPT-3.5 Turbo (Recommended)',
+                'text-davinci-003' => 'text-davinci-003',
+                'text-curie-001' => 'text-curie-001',
+            ],
+            'default' => 'gpt-3.5-turbo',
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_n',
+            'title' => 'N',
+            'section' => 'section1',
+            'min' => 1,
+            'default' => 1,
+        ],
+        [
+            'type' => 'text',
+            'name' => 'andika_stop',
+            'title' => 'Stop',
+            'section' => 'section1',
+            'default' => '.',
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_temperature',
+            'title' => 'Temperature',
+            'section' => 'section1',
+            'min' => 0,
+            'max' => 1,
+            'step' => 0.01,
+            'default' => 0.7,
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_best_of',
+            'title' => 'Best Of',
+            'section' => 'section1',
+            'min' => 1,
+            'default' => 1,
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_frequency_penalty',
+            'title' => 'Frequency Penalty',
+            'section' => 'section1',
+            'min' => 0,
+            'max' => 1,
+            'step' => 0.01,
+            'default' => 0,
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_presence_penalty',
+            'title' => 'Presence Penalty',
+            'section' => 'section1',
+            'min' => 0,
+            'max' => 1,
+            'step' => 0.01,
+            'default' => 0,
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_max_tokens',
+            'title' => 'Max Tokens',
+            'section' => 'section1',
+            'min' => 1,
+            'default' => 256,
+        ],
+        [
+            'type' => 'number',
+            'name' => 'andika_top_p',
+            'title' => 'Top p',
+            'section' => 'section1',
+            'min' => 0,
+            'max' => 1,
+            'step' => 0.01,
+            'default' => 1,
+        ],
+        // Add other fields here...
+    ],
+];

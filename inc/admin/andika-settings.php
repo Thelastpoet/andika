@@ -25,20 +25,18 @@ class Andika_Settings {
     public function render_settings_page() {
         ?>
         <div class="wrap andika-wrap">
-            <h2><?php _e('Andika Settings', 'andika'); ?></h2>
+			<header class="andika-header">
+				<h1><?php _e('Andika Settings', 'andika'); ?></h1>
+			</header>
+	
 			<div class="andika-tabs-container">
-				<h2 class="nav-tab-wrapper">
-					<a href="#general" class="nav-tab"><?php _e('General', 'andika'); ?></a>
+				<nav class="nav-tab-wrapper">
 					<a href="#openai-settings" class="nav-tab"><?php _e('Andika AI Settings', 'andika'); ?></a>
 					<a href="#help" class="nav-tab"><?php _e('Documentation', 'andika'); ?></a>
-				</h2>
-
-				<div class="andika-settings-content">
-					<div id="general" class="andika-settings-tab">
-						<h2><?php _e('General', 'andika'); ?></h2>
-					</div>
-
-					<div id="openai-settings" class="andika-settings-tab">
+				</nav>
+	
+				<div class="andika-settings-content">	
+					<section id="openai-settings" class="andika-settings-tab">
 						<form method="post" action="options.php">
 							<?php
 							settings_fields('andika-settings-group');
@@ -46,19 +44,19 @@ class Andika_Settings {
 							submit_button();
 							?>
 						</form>
-					</div>
-
-					<div id="help" class="andika-settings-tab">
+					</section>
+	
+					<section id="help" class="andika-settings-tab">
 						<h2><?php _e('Documentation', 'andika'); ?></h2>
 						<?php include ANDIKA_PLUGIN_DIR . 'inc/admin/doc-content.php'; ?>
-					</div>
+					</section>
 				</div>
 			</div>
-        </div>
-        <?php
+		</div>
+		<?php
     }
 
-    public function register_settings() {
+    public function register_fields() {
 		register_setting('andika-settings-group', 'andika_openai_api_key', array('sanitize_callback' => 'sanitize_text_field'));
         register_setting('andika-settings-group', 'andika_model', array('sanitize_callback' => 'sanitize_text_field'));
         register_setting('andika-settings-group', 'andika_n', array('sanitize_callback' => 'intval'));
@@ -67,7 +65,6 @@ class Andika_Settings {
 		register_setting('andika-settings-group', 'andika_best_of', array('sanitize_callback' => 'intval'));
 		register_setting('andika-settings-group', 'andika_frequency_penalty', array('sanitize_callback' => 'floatval'));
 		register_setting('andika-settings-group', 'andika_presence_penalty', array('sanitize_callback' => 'floatval'));
-		register_setting('andika-settings-group', 'andika_max_tokens', array('sanitize_callback' => 'intval'));
     	register_setting('andika-settings-group', 'andika_top_p', array('sanitize_callback' => 'floatval'));
 	
 		add_settings_section(
@@ -140,14 +137,6 @@ class Andika_Settings {
 			'andika-settings',
 			'andika-api-settings'
 		);
-
-		add_settings_field(
-			'andika_max_tokens',
-			__('Max Tokens', 'andika'),
-			array($this, 'render_max_tokens_field'),
-			'andika-settings',
-			'andika-api-settings'
-		);
 	
 		add_settings_field(
 			'andika_top_p',
@@ -173,8 +162,6 @@ class Andika_Settings {
 			'gpt-3.5-turbo'    => 'GPT-3.5 Turbo',
 			'text-davinci-003' => 'text-davinci-003',
 			'text-curie-001'   => 'text-curie-001',
-			'text-babbage-001' => 'text-babbage-001',
-			'text-ada-001'     => 'text-ada-001',
 		);
 		$selected_model = get_option('andika_model', 'text-davinci-003');
 		?>
@@ -194,7 +181,7 @@ class Andika_Settings {
 	}
 	
 	public function render_stop_field() {
-		$stop = get_option('andika_stop');
+		$stop = get_option('andika_stop', "\n");
 		?>
 		<input type="text" name="andika_stop" value="<?php echo esc_attr($stop); ?>" class="regular-text">
 		<?php
@@ -225,13 +212,6 @@ class Andika_Settings {
 		$presence_penalty = get_option('andika_presence_penalty', 0);
 		?>
 		<input type="number" name="andika_presence_penalty" value="<?php echo esc_attr($presence_penalty); ?>" min="0" max="1" step="0.01" class="small-text">
-		<?php
-	}
-
-	public function render_max_tokens_field() {
-		$max_tokens = get_option('andika_max_tokens', 1000);
-		?>
-		<input type="number" name="andika_max_tokens" value="<?php echo esc_attr($max_tokens); ?>" min="1" class="small-text">
 		<?php
 	}
 	

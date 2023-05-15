@@ -6,6 +6,7 @@ import { RichText } from '@wordpress/block-editor';
 
 import { generateText } from './utils/andika-ai';
 
+// Local imports
 import AndikaBlockHandler from './components/blockhandler';
 import AndikaBlockControls from './components/blockcontrols';
 import AndikaInspectorControls from './components/inspectorcontrols';
@@ -46,6 +47,7 @@ export default function Edit({
         .join('\n')
     : '';
 
+    // Function to set the caret position in the RichText component.
     const setCaretPosition = (editableRef) => {
       if (!editableRef.current) return;
   
@@ -79,15 +81,18 @@ export default function Edit({
     setIsLoading(true);
   
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
+
+    // Get the 'andikaTextLength' attribute
+    const andikaTextLength = attributes.andikaTextLength;
   
     try {
-      await generateText(prompt, content, setContent, insertBlocks, clientId);
+      await generateText(prompt, content, setContent, insertBlocks, clientId, andikaTextLength);
     } catch (error) {
       createNotice('error', `Text generation failed: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId]);
+  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId, attributes.andikaTextLength]);
 
   return (
     <Fragment>

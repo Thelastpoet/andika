@@ -267,6 +267,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// Local imports
+
 
 
 function Edit(_ref) {
@@ -301,6 +303,8 @@ function Edit(_ref) {
   const postTitle = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core/editor').getEditedPostAttribute('title'));
   const previousBlocks = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.store).getBlocks());
   const previousContent = previousBlocks.length > 0 ? previousBlocks.slice(0, -1).map(block => block.attributes.content).join('\n') : '';
+
+  // Function to set the caret position in the RichText component.
   const setCaretPosition = editableRef => {
     if (!editableRef.current) return;
     const range = document.createRange();
@@ -329,14 +333,17 @@ function Edit(_ref) {
   const onGenerateClick = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
     setIsLoading(true);
     const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
+
+    // Get the 'andikaTextLength' attribute
+    const andikaTextLength = attributes.andikaTextLength;
     try {
-      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, insertBlocks, clientId);
+      await (0,_utils_andika_ai__WEBPACK_IMPORTED_MODULE_4__.generateText)(prompt, content, setContent, insertBlocks, clientId, andikaTextLength);
     } catch (error) {
       createNotice('error', `Text generation failed: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId]);
+  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId, attributes.andikaTextLength]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_blockcontrols__WEBPACK_IMPORTED_MODULE_6__["default"], {
     attributes: attributes,
     setAttributes: setAttributes,
@@ -534,25 +541,37 @@ async function generateText(prompt, content, setContent, insertBlocks, clientId,
             // If the buffer contains newline characters, split and insert the paragraphs as blocks
             if (buffer.includes('\n')) {
               const paragraphs = buffer.split(/\n+/);
-
               // Filter out empty paragraphs
               const validParagraphs = paragraphs.filter(paragraph => paragraph.trim() !== '');
-
               // Create blocks from paragraphs
               const blocks = validParagraphs.map(paragraph => (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
                 content: paragraph
               }));
 
-              // Save the index of the current block
+              // Save index of current block
               const index = wp.data.select('core/block-editor').getBlockIndex(clientId);
 
-              // Insert new blocks after the current block
-              insertBlocks(blocks, index);
+              // If we are appending content
+              if (content) {
+                // Update the content of existing block
+                const updatedBlock = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
+                  content: content + validParagraphs[0]
+                });
+                wp.data.dispatch('core/block-editor').replaceBlock(clientId, updatedBlock);
 
+                // Remove the first paragraph from the new blocks to be inserted
+                const remainingBlocks = blocks.slice(1);
+
+                // Insert the remaining blocks after the current block
+                insertBlocks(remainingBlocks, index + 1);
+              } else {
+                // Insert the blocks
+                insertBlocks(blocks, index);
+              }
               // Clear the buffer
               buffer = '';
             } else {
-              // Update the content of the current block
+              // Append the buffer content
               setContent(content + buffer);
             }
           }
@@ -567,16 +586,16 @@ async function generateText(prompt, content, setContent, insertBlocks, clientId,
   let maxTokens;
   switch (andikaTextLength) {
     case 'short':
-      maxTokens = 32;
+      maxTokens = 24;
       break;
     case 'medium':
-      maxTokens = 64;
+      maxTokens = 48;
       break;
     case 'long':
-      maxTokens = 128;
+      maxTokens = 96;
       break;
     default:
-      maxTokens = 64;
+      maxTokens = 48;
   }
 
   // Call the Andika API to generate text and handle the streaming events

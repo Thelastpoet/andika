@@ -30,33 +30,38 @@ export async function generateText(prompt, content, setContent, insertBlocks, cl
             buffer += sanitizedText;
   
             // If the buffer contains newline characters, split and insert the paragraphs as blocks
-            if (buffer.includes('\n')) {
-  
-              const paragraphs = buffer.split(/\n+/);
-  
-              // Filter out empty paragraphs
-              const validParagraphs = paragraphs.filter((paragraph) => paragraph.trim() !== '');
-  
-              // Create blocks from paragraphs
+            if (buffer.includes('\n')) {  
+              const paragraphs = buffer.split(/\n+/);  
+              const validParagraphs = paragraphs.filter((paragraph) => paragraph.trim() !== '');  
+
               const blocks = validParagraphs.map((paragraph) =>
                 createBlock('andika-block/andika', { content: paragraph })
               );
-              
-              // Save the index of the current block
+
+              // Save index of current block
               const index = wp.data.select('core/block-editor').getBlockIndex(clientId);
-  
-              // Insert new blocks after the current block
-              insertBlocks(blocks, index);  
-              
+
+              // If we are appending content
+              if (content && content !== validParagraphs[0]) { 
+                const updatedBlock = createBlock('andika-block/andika', { content: content + validParagraphs[0] });
+                wp.data.dispatch('core/block-editor').replaceBlock(clientId, updatedBlock);
+
+                // Insert the remaining blocks after the current block
+                insertBlocks(blocks, index + 1);
+              } else {
+                // Insert the blocks
+                insertBlocks(blocks, index);
+              }
               // Clear the buffer
               buffer = '';
-                
             } else {
-              // Update the content of the current block
+              // Append the buffer content
               setContent(content + buffer);
+              
             }
-          }
-        } catch (e) {
+            }
+          }       
+       catch (e) {
           throw new Error('Error parsing JSON: ' + e.message);
         }
       }
@@ -68,16 +73,16 @@ export async function generateText(prompt, content, setContent, insertBlocks, cl
 
   switch (andikaTextLength) {
     case 'short':
-      maxTokens = 32;
+      maxTokens = 24;
       break;
     case 'medium':
-      maxTokens = 64;
+      maxTokens = 48;
       break;
     case 'long':
-      maxTokens = 128;
+      maxTokens = 96;
       break;
     default:
-      maxTokens = 64;
+      maxTokens = 48;
   }
 
   // Call the Andika API to generate text and handle the streaming events
