@@ -3,7 +3,7 @@ Contributors: ammanulah
 Tags: Writing, AI, block editor, OpenAI, AI-assisted-writing
 Requires at least: 5.0
 Tested up to: 6.2
-Stable tag: 1.0.9
+Stable tag: 1.0.0
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -25,6 +25,15 @@ Andika is a WordPress plugin that leverages AI technology to improve the writing
 Activate the plugin through the 'Plugins' settings in WordPress.
 2. Set up your OpenAI key from the Andika Menu (other settings are optional). Make sure to select the SEO plugin from the SEO settings. Choose the current SEO plugin you use on your website. You will find the Andika block when creating your post.
 3. Use the Andika block in the WordPress block editor to start writing smarter, faster, and under your guidance.
+
+== OPENAI ==
+
+Andika utilizes the API from [OpenAI](https://platform.openai.com/), which is a 3rd party or external service. The data transmitted to the OpenAI servers primarily consists of the content of your article and the context you specify. By using this plugin, you agree to the OpenAI terms of use and privacy policies, which can be found at the following links:
+
+* OpenAI Terms of Use: https://openai.com/policies/terms-of-use
+* OpenAI Privacy Policy: https://openai.com/policies/privacy-policy
+
+Please note that the use of this external service is necessary for the proper functioning of the plugin, and the data transmitted is solely used to generate relevant content for your article. We take your data privacy seriously and make every effort to protect your information.
 
 == Frequently Asked Questions ==
 
