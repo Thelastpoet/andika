@@ -1,5 +1,7 @@
 <?php
 
+namespace Andika;
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

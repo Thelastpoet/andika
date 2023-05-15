@@ -1,4 +1,6 @@
 <?php
+
+namespace Andika;
 /**
  * Andiks Settings page.
  * 

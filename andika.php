@@ -15,6 +15,8 @@
  * @package Andika
  */
 
+ namespace Andika;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -31,7 +33,7 @@ function andika_load_textdomain() {
         ANDIKA_PLUGIN_DIR . 'languages'
     );
 }
-add_action('plugins_loaded', 'andika_load_textdomain');
+add_action('plugins_loaded', 'Andika\andika_load_textdomain');
 
 // Andika main class.
 require_once ANDIKA_PLUGIN_DIR . 'inc/class-andika.php';
@@ -41,4 +43,4 @@ function andika_initialize() {
 	$andika = new Andika();
 	$andika->run();
 }
-add_action( 'plugins_loaded', 'andika_initialize' );
+add_action( 'plugins_loaded', 'Andika\andika_initialize' );
