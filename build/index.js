@@ -541,9 +541,7 @@ async function generateText(prompt, content, setContent, insertBlocks, clientId,
             // If the buffer contains newline characters, split and insert the paragraphs as blocks
             if (buffer.includes('\n')) {
               const paragraphs = buffer.split(/\n+/);
-              // Filter out empty paragraphs
               const validParagraphs = paragraphs.filter(paragraph => paragraph.trim() !== '');
-              // Create blocks from paragraphs
               const blocks = validParagraphs.map(paragraph => (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
                 content: paragraph
               }));
@@ -552,18 +550,14 @@ async function generateText(prompt, content, setContent, insertBlocks, clientId,
               const index = wp.data.select('core/block-editor').getBlockIndex(clientId);
 
               // If we are appending content
-              if (content) {
-                // Update the content of existing block
+              if (content && content !== validParagraphs[0]) {
                 const updatedBlock = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.createBlock)('andika-block/andika', {
                   content: content + validParagraphs[0]
                 });
                 wp.data.dispatch('core/block-editor').replaceBlock(clientId, updatedBlock);
 
-                // Remove the first paragraph from the new blocks to be inserted
-                const remainingBlocks = blocks.slice(1);
-
                 // Insert the remaining blocks after the current block
-                insertBlocks(remainingBlocks, index + 1);
+                insertBlocks(blocks, index + 1);
               } else {
                 // Insert the blocks
                 insertBlocks(blocks, index);
