@@ -46,8 +46,11 @@ export async function generateText(prompt, content, setContent, insertBlocks, cl
                 const updatedBlock = createBlock('andika-block/andika', { content: content + validParagraphs[0] });
                 wp.data.dispatch('core/block-editor').replaceBlock(clientId, updatedBlock);
 
+                // Remove the first paragraph block from the new blocks to be inserted
+                const remainingBlocks = blocks.slice(1);
+
                 // Insert the remaining blocks after the current block
-                insertBlocks(blocks, index + 1);
+                insertBlocks(remainingBlocks, index + 1);
               } else {
                 // Insert the blocks
                 insertBlocks(blocks, index);
