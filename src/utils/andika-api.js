@@ -14,11 +14,7 @@ class AndikaOpenAI {
   }
 
   get_api_url() {
-    if (this.model === 'gpt-3.5-turbo' || this.model === 'gpt-4') {
-      return `${API_BASE_URL}chat/completions`;
-    } else {
-      return `${API_BASE_URL}completions`;
-    }
+    return `${API_BASE_URL}chat/completions`;
   }
 
   async andikaText(prompt, callback, options = {}) {
@@ -34,13 +30,8 @@ class AndikaOpenAI {
       n: 1,
       max_tokens: options.max_tokens,
       ...options,
+      messages: [{role:'user', content:prompt}]
     };
-
-    if (this.model === 'gpt-3.5-turbo' || this.model === 'gpt-4') {
-      body.messages = [{role:'user', content:prompt}];
-    } else {
-      body.prompt = prompt;
-    }
 
     const requestOptions = {
       method: 'POST',

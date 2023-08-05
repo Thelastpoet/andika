@@ -11,7 +11,8 @@
     "openai", 
     "real-time", 
     "ai", 
-    "text"],
+    "text"
+  ],
   "textdomain": "andika",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
@@ -20,7 +21,12 @@
     "content": {
       "type": "string",
       "source": "html",
-      "selector": "p"
+      "selector": "div"
+    },
+    "tableContent": {
+      "type": "string",
+      "source": "html",
+      "selector": "table"
     },
     "element": {
       "type": "string",
@@ -60,5 +66,5 @@
       "lineHeight": true
     },
     "className": false
-  }  
+  } 
 }

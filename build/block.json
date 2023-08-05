@@ -21,7 +21,12 @@
     "content": {
       "type": "string",
       "source": "html",
-      "selector": "p"
+      "selector": "div"
+    },
+    "tableContent": {
+      "type": "string",
+      "source": "html",
+      "selector": "table"
     },
     "element": {
       "type": "string",
