@@ -1,17 +1,17 @@
 {
+  "apiVersion": 2,
   "name": "andika-block/andika",
   "version": "0.1.0",
   "title": "Andika",
   "category": "text",
   "icon": "lightbulb",
-  "description": "Elevate your writing with real-time AI text generation using Andika.",
-  "author": "Ammanulah Emmanuel",
+  "description": "Enhanced paragraph block with AI-powered text generation.",
   "keywords": [
+    "text",
+    "paragraph",
+    "AI",
     "andika",
-    "openai",
-    "real-time",
-    "ai",
-    "text"
+    "openai"
   ],
   "textdomain": "andika",
   "editorScript": "file:./index.js",
@@ -21,20 +21,14 @@
     "content": {
       "type": "string",
       "source": "html",
-      "selector": "div"
-    },
-    "tableContent": {
-      "type": "string",
-      "source": "html",
-      "selector": "table"
-    },
-    "element": {
-      "type": "string",
-      "default": "p"
+      "selector": "p",
+      "default": ""
     },
     "alignment": {
-      "type": "string",
-      "default": "none"
+      "type": "string"
+    },
+    "fontSize": {
+      "type": "string"
     },
     "backgroundColor": {
       "type": "string"
@@ -42,12 +36,8 @@
     "textColor": {
       "type": "string"
     },
-    "fontSize": {
-      "type": "string"
-    },
     "lineHeight": {
-      "type": "number",
-      "default": 1.5
+      "type": "number"
     },
     "andikaTextLength": {
       "type": "string",
@@ -55,16 +45,20 @@
     }
   },
   "supports": {
+    "align": true,
     "color": {
-      "text": true,
       "background": true,
+      "text": true,
       "gradients": true,
-      "link": true
+      "link": false
     },
     "typography": {
       "fontSize": true,
       "lineHeight": true
     },
-    "className": false
+    "spacing": {
+      "padding": true
+    },
+    "className": true
   }
 }

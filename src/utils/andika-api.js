@@ -1,10 +1,10 @@
-import { createParser } from "eventsource-parser";
-
-const API_BASE_URL = 'https://api.openai.com/v1/';
+import OpenAI from 'openai';
 
 class AndikaOpenAI {
   constructor(options) {
-    this.apiKey = options.api_key;
+    this.openai = new OpenAI({
+      apiKey: options.api_key,
+    });
     this.model = options.model;
     this.temperature = parseFloat(options.temperature);
     this.top_p = parseFloat(options.topP);
@@ -13,13 +13,7 @@ class AndikaOpenAI {
     this.stream = options.stream === "1" ? true : false;
   }
 
-  get_api_url() {
-    return `${API_BASE_URL}chat/completions`;
-  }
-
-  async andikaText(prompt, callback, options = {}) {
-    const url = this.get_api_url();
-
+  async andikaText(prompt, options = {}) {
     const body = {
       model: this.model,
       temperature: this.temperature,
@@ -33,34 +27,10 @@ class AndikaOpenAI {
       messages: [{role:'user', content:prompt}]
     };
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify(body),
-    };
-
     try {
-      const response = await fetch(url, requestOptions);
-      if (!response.ok) {
-        // Log the error response
-        const errorData = await response.json();
-        console.error('Error response from OpenAI API:', errorData);
-        throw new Error(response.statusText);
-      }
-
-      const parser = createParser(callback)
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();        
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        parser.feed(decoder.decode(value));
+      const response = await this.openai.createChatCompletion(body);
+      if (response.data) {
+        return response.data.choices[0].message.content.trim();
       }
     } catch (error) {
       console.error('Error generating text:', error);

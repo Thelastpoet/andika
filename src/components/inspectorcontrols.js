@@ -6,63 +6,52 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 
-const AndikaInspectorControls = ({
-    attributes,
-    setAttributes,
-}) => {
-    const { lineHeight } = attributes;     
-
-    const onChangeLineHeight = (value) => {
-        setAttributes({ lineHeight: value });
-    };
+const AndikaInspectorControls = ({ attributes, setAttributes }) => {
+    const { fontSize, lineHeight, textColor, backgroundColor, andikaTextLength } = attributes;
 
     return (
         <InspectorControls>
-            <PanelBody title={__('Andika Controls', 'andika')}>
+            <PanelBody title={__('Text Options', 'andika')}>
                 <SelectControl
                     label={__('Text Length', 'andika')}
-                    value={attributes.andikaTextLength}
+                    value={andikaTextLength}
                     options={[
-                        { label: 'Short', value: 'short' },
-                        { label: 'Medium', value: 'medium' },
-                        { label: 'Long', value: 'long' },
+                        { label: __('Short', 'andika'), value: 'short' },
+                        { label: __('Medium', 'andika'), value: 'medium' },
+                        { label: __('Long', 'andika'), value: 'long' },
                     ]}
                     onChange={(value) => setAttributes({ andikaTextLength: value })}
                 />
             </PanelBody>
-            <PanelBody title={__('Typography', 'andika')}>           
+            <PanelBody title={__('Typography', 'andika')}>
                 <FontSizePicker
-                    value={attributes.fontSize}
+                    value={fontSize}
                     onChange={(value) => setAttributes({ fontSize: value })}
-                    __nextHasNoMarginBottom={true}
                 />
                 <RangeControl
-                    label={__('Line height', 'andika')}
-                    value={lineHeight}
-                    onChange={onChangeLineHeight}
+                    label={__('Line Height', 'andika')}
+                    value={lineHeight || 1}
+                    onChange={(value) => setAttributes({ lineHeight: value })}
                     min={1}
                     max={3}
                     step={0.1}
                 />
             </PanelBody>
             <PanelColorSettings
-                title={__('Color settings', 'andika')}
-                initialOpen={false}
+                title={__('Color Settings', 'andika')}
                 colorSettings={[
                     {
-                        value: attributes.textColor,
-                        onChange: (value) => setAttributes({ textColor: value }),
-                        label: __('Text color', 'andika'),
+                        value: textColor,
+                        onChange: (colorValue) => setAttributes({ textColor: colorValue }),
+                        label: __('Text Color', 'andika'),
                     },
                     {
-                        value: attributes.backgroundColor,
-                        onChange: (value) => setAttributes({ backgroundColor: value }),
-                        label: __('Background color', 'andika'),
-                    }
+                        value: backgroundColor,
+                        onChange: (colorValue) => setAttributes({ backgroundColor: colorValue }),
+                        label: __('Background Color', 'andika'),
+                    },
                 ]}
-            >
-            </PanelColorSettings>
-
+            />
         </InspectorControls>
     );
 };

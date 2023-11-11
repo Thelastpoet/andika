@@ -1,79 +1,52 @@
 import { createBlock } from '@wordpress/blocks';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useEffect, useState } from '@wordpress/element';
 import AndikaOpenAI from './andika-api';
-import { marked } from 'marked';
 
-// Generates text using the Andika API and inserts it as blocks in the WordPress editor
-export async function generateText(prompt, content, setContent, insertBlocks, clientId, andikaTextLength) {
-  const andikaAPI = new AndikaOpenAI(andika);
+// Component for generating and inserting text
+export function AndikaTextGenerator({ clientId, andikaTextLength }) {
+  const [buffer, setBuffer] = useState('');
+  const { replaceBlock } = useDispatch('core/block-editor');
+  const blockContent = useSelect((select) =>
+    select('core/block-editor').getBlockAttributes(clientId)?.content
+  );
 
-  let buffer = '';
+  const handleStreamEvent = (event) => {
+    if (event.type === 'text' && event.data) {
+      setBuffer((prevBuffer) => prevBuffer + event.data);
+    }
+  };
 
-  // Handles the streaming events returned by the OpenAI API
-  const andikaStreamEvents = async (event) => {
-    if (event.type === 'event') {
-      if (event.data !== "[DONE]") {
-        try {
-          const parsedData = JSON.parse(event.data);
-          const text =
-            parsedData.choices[0]?.text ??
-            parsedData.choices[0]?.message?.content ??
-            parsedData.choices[0]?.delta?.content ??
-            '';
+  useEffect(() => {
+    if (buffer.includes('\n')) {
+      const paragraphs = buffer.split(/\n+/).filter(p => p.trim());
+      const blocks = paragraphs.map(p => createBlock('core/paragraph', { content: p }));
 
-          const sanitizedText = text.replace(/^\n{1,2}/, '');          
-
-          if (sanitizedText) {
-            buffer += sanitizedText;
-  
-            if (buffer.includes('\n')) {  
-              const paragraphs = buffer.split(/\n+/);  
-              const validParagraphs = paragraphs.filter((paragraph) => paragraph.trim() !== '');                
-              const htmlParagraphs = validParagraphs.map((paragraph) => marked(paragraph));             
-              
-              const index = wp.data.select('core/block-editor').getBlockIndex(clientId);
-              if (content && content !== htmlParagraphs[0]) { 
-                const updatedBlock = createBlock('andika-block/andika', { content: content + htmlParagraphs[0] });
-                wp.data.dispatch('core/block-editor').replaceBlock(clientId, updatedBlock);
-                const remainingBlocks = blocks.slice(1);
-                insertBlocks(remainingBlocks, index + 1);
-              } else {
-                insertBlocks(blocks, index);
-              }
-              buffer = '';
-            } else {
-              setContent(content + buffer);
-              
-            }
-            }
-          }       
-       catch (e) {
-          throw new Error('Error parsing JSON: ' + e.message);
+      if (blocks.length > 0) {
+        replaceBlock(clientId, blocks[0]);
+        if (blocks.length > 1) {
+          blocks.slice(1).forEach(block => replaceBlock(clientId, block, clientId));
         }
       }
+
+      setBuffer('');
     }
-  };  
+  }, [buffer, replaceBlock, clientId]);
 
-  // Set the maximum number of tokens to generate based on the specified text length
-  let maxTokens;
+  const generateText = async () => {
+    const andikaAPI = new AndikaOpenAI();
+    const maxTokens = { short: 24, medium: 48, long: 96 }[andikaTextLength] || 48;
 
-  switch (andikaTextLength) {
-    case 'short':
-      maxTokens = 24;
-      break;
-    case 'medium':
-      maxTokens = 48;
-      break;
-    case 'long':
-      maxTokens = 96;
-      break;
-    default:
-      maxTokens = 48;
-  }
+    try {
+      await andikaAPI.generateText(handleStreamEvent, { max_tokens: maxTokens });
+    } catch (error) {
+      console.error('Error in generateText:', error);
+    }
+  };
 
-  // Call the Andika API to generate text and handle the streaming events
-  try {
-    await andikaAPI.andikaText(prompt, andikaStreamEvents, { max_tokens: maxTokens });
-  } catch (error) {
-    throw new Error('Error in generateText: ' + error.message);
-  }
+  useEffect(() => {
+    generateText();
+  }, [andikaTextLength]);
+
+  return null;
 }

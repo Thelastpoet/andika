@@ -1,136 +1,119 @@
 import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useBlockProps, store as blockEditorStore } from '@wordpress/block-editor';
-import { Fragment, useState, useCallback, useEffect, useRef } from '@wordpress/element';
-import { RichText } from '@wordpress/block-editor';
+import { RichText, BlockControls, AlignmentToolbar, InspectorControls, PanelColorSettings, FontSizePicker, withColors, ContrastChecker } from '@wordpress/block-editor';
+import { Fragment, useState, useEffect, useRef } from '@wordpress/element';
 
-import { generateText } from './utils/andika-ai';
-
-// Local imports
-import AndikaBlockHandler from './components/blockhandler';
+import { AndikaTextGenerator } from './utils/andika-ai';
 import AndikaBlockControls from './components/blockcontrols';
 import AndikaInspectorControls from './components/inspectorcontrols';
 
-export default function Edit({
+const AndikaEdit = withColors('backgroundColor', { textColor: 'color' })(function Edit({
   attributes,
   setAttributes,
   isSelected,
   clientId,
+  backgroundColor,
+  textColor,
+  setBackgroundColor,
+  setTextColor
 }) {
-  const { content: contentAttr, alignment, fontSize, textColor, backgroundColor } = attributes;
+  const { content, fontSize, alignment, andikaTextLength } = attributes;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [content, setContent] = useState(contentAttr || '');
+  const blockRef = useRef();
 
-  const {
-    onSplit,
-    onMerge,
-    onReplace,
-  } = AndikaBlockHandler(attributes, content, setAttributes, setContent, clientId);
-  const RichTextRef = useRef();
-  const blockProps = useBlockProps();
-  const { insertBlocks } = useDispatch(blockEditorStore);
-  const { createNotice } = useDispatch('core/notices');
+  // Update content attribute when changed
+  const onChangeContent = (newContent) => {
+    setAttributes({ content: newContent });
+  };
 
-  const postTitle = useSelect((select) =>
-    select('core/editor').getEditedPostAttribute('title')
-  );
+  // Update alignment
+  const onChangeAlignment = (newAlignment) => {
+    setAttributes({ alignment: newAlignment });
+  };
 
-  const previousBlocks = useSelect((select) =>
-    select(blockEditorStore).getBlocks()
-  );
+  // Update font size
+  const onChangeFontSize = (newFontSize) => {
+    setAttributes({ fontSize: newFontSize });
+  };
 
-  const previousContent = previousBlocks.length > 0
-    ? previousBlocks
-        .slice(0, -1)
-        .map((block) => block.attributes.content)
-        .join('\n')
-    : '';
-
-    // Function to set the caret position in the RichText component.
-    const setCaretPosition = (editableRef) => {
-      if (!editableRef.current) return;
-  
-      const range = document.createRange();
-      const sel = window.getSelection();
-  
-      if (content === '') {
-        // Set the caret to the start of the placeholder when the content is empty
-        range.setStart(editableRef.current, 0);
-      } else {
-        const lastChild = editableRef.current.lastChild;
-        if (lastChild) {
-          // Set the caret to the end of the content when content is not empty
-          range.setStartAfter(lastChild);
-        }
-      }
-  
-      range.collapse(true);
-      sel.removeAllRanges();
-      sel.addRange(range);
-      editableRef.current.focus();
-    };
-    
-
-  useEffect(() => {
-    setCaretPosition(RichTextRef);
-    setAttributes({ content });
-  }, [content, setAttributes]);
-
-  const onGenerateClick = useCallback(async () => {
+  // AI text generation handlers
+  const onGenerateClick = () => {
     setIsLoading(true);
-  
-    const prompt = `Title: ${postTitle}\n\n${previousContent}\n\n${content}`;
+    // Trigger text generation with the Andika API
+    // This should be a function in your AndikaTextGenerator component
+    // that starts the AI text generation process.
+  };
 
-    // Get the 'andikaTextLength' attribute
-    const andikaTextLength = attributes.andikaTextLength;
-  
-    try {
-      await generateText(prompt, content, setContent, insertBlocks, clientId, andikaTextLength);
-    } catch (error) {
-      createNotice('error', `Text generation failed: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [content, postTitle, previousContent, setContent, insertBlocks, clientId, attributes.andikaTextLength]);
+  const onTextGenerationComplete = (newContent) => {
+    setIsLoading(false);
+    onChangeContent(newContent);
+  };
 
   return (
     <Fragment>
+      <BlockControls>
+        <AlignmentToolbar
+          value={alignment}
+          onChange={onChangeAlignment}
+        />
+      </BlockControls>
+      <InspectorControls>
+        <PanelColorSettings
+          title={__('Color settings', 'andika')}
+          initialOpen={true}
+          colorSettings={[
+            {
+              value: backgroundColor.color,
+              onChange: setBackgroundColor,
+              label: __('Background color', 'andika'),
+            },
+            {
+              value: textColor.color,
+              onChange: setTextColor,
+              label: __('Text color', 'andika'),
+            },
+          ]}
+        >
+          <ContrastChecker
+            backgroundColor={backgroundColor.color}
+            textColor={textColor.color}
+          />
+        </PanelColorSettings>
+        <FontSizePicker
+          value={fontSize}
+          onChange={onChangeFontSize}
+        />
+        <AndikaInspectorControls
+          attributes={attributes}
+          setAttributes={setAttributes}
+        />
+      </InspectorControls>
       <AndikaBlockControls
         attributes={attributes}
         setAttributes={setAttributes}
         isLoading={isLoading}
         onGenerateClick={onGenerateClick}
       />
-      <AndikaInspectorControls
-        attributes={attributes}
-        setAttributes={setAttributes}
+      <AndikaTextGenerator
+        clientId={clientId}
+        andikaTextLength={andikaTextLength}
+        onTextGenerationComplete={onTextGenerationComplete}
       />
       <RichText
-        ref={RichTextRef}
-        tagName="div"
+        ref={blockRef}
+        tagName="p"
         value={content}
-        onChange={(newContent) => {
-          setContent(newContent);
-          setAttributes({ content: newContent });
-        }}
-        className="andika-placeholder"
+        onChange={onChangeContent}
         placeholder={__(
           'Type and click the lightbulb icon to generate text...',
           'andika',
         )}
         isSelected={isSelected}
-        style={{
-          textAlign: alignment,
-          fontSize: fontSize,
-          color: textColor,
-          backgroundColor: backgroundColor,
-        }}
-        onSplit={onSplit}
-        onReplace={(blocks) => onReplace(blocks, clientId)}
-        onRemove={() => onReplace([])}
-        onMerge={() => onMerge(clientId)}
+        style={{ textAlign: alignment, fontSize, color: textColor.color, backgroundColor: backgroundColor.color }}
       />
     </Fragment>
   );
-}
+});
+
+export default AndikaEdit;
